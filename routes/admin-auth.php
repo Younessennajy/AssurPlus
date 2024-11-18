@@ -6,8 +6,7 @@ use App\Http\Controllers\Admin\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\B2cController;
-use App\Http\Controllers\Admin\B2bController;
+use App\Http\Controllers\Admin\DataController;
 
 Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -45,9 +44,9 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     ->name('users.updatePermission');
 
 
-    Route::get('/data/b2b', [B2bController::class, 'index'])->name('data.b2b');
-    Route::get('/data/b2c', [B2cController::class, 'index'])->name('data.b2c');
-    Route::get('/data/country', [DataController::class, 'country'])->name('data.country');
+    Route::get('/data/pays', [DataController::class, 'pays'])->name('data.pays');
 
+    Route::get('/pays/{pays}/b2b', [DataController::class, 'showB2BData'])->name('pays.b2b');
+    Route::get('pays/{pays}/b2c', [DataController::class, 'showB2CData'])->name('pays.b2c');
     
 });

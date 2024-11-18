@@ -2,48 +2,38 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg flex">
-                <!-- Sidebar -->
                 @include('admin.layouts.sidebar')
-                <div class="flex justify-between  space-x-2">
-                    <div class="relative">
-                        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-blue-500">
-                        <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a7 7 0 017 7m0 0a7 7 0 11-14 0 7 7 0 0114 0zm-4 7l4 4" />
-                        </svg>
+                <main class="p-6 w-full">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        @foreach($pays as $country)
+                            <div 
+                                class="relative group border rounded-lg p-4 bg-white shadow hover:shadow-lg transition-all cursor-pointer"
+                                onclick="toggleOptions('{{ $country->id }}')">
+                                
+                                <img 
+                                    src="{{ asset('images/countries/' . strtolower($country->name) . '.png') }}" 
+                                    alt="{{ $country->name }}" 
+                                    class="w-16 h-16 mx-auto mb-4">
+                                <p class="text-center font-semibold">+{{ $country->indicatif }}</p>
+
+                                <div 
+                                    id="options-{{ $country->id }}" 
+                                    class="hidden absolute top-0 left-0 w-full h-full bg-white bg-opacity-90 flex flex-col items-center justify-center rounded-lg shadow-lg">
+                                    <a 
+                                        href="{{ route('admin.pays.b2b', ['pays' => $country->name]) }}"
+                                        class="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        B2B
+                                    </a>
+                                    <a 
+                                        href="{{ route('admin.pays.b2c', ['pays' => $country->name]) }}"
+                                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                                        B2C
+                                    </a>
+                                </div>
+
+                            </div>
+                        @endforeach
                     </div>
-                    
-                    <div class="space-x-4">
-                            <button 
-                                onclick="window.location.href='{{ route('import.show') }}'"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Import
-                            </button>
-        
-                            <button 
-                                onclick="window.location.href='{{ route('export.show') }}'"
-                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Export
-                            </button>
-                    </div>
-                </div>
-                <main>
-    <div class="container mt-5">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <button class="btn btn-primary" onclick="showData('b2c')">B2C Data</button>
-            </div>
-            <div class="col-md-6">
-                <select class="form-select" id="countrySelect" onchange="getDataByCountry()">
-                    <option value="">Select Country</option>
-                    @foreach($countries as $country)
-                        <option value="{{ $country->id }}">{{ $country->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    </div>
                 </main>
             </div>
         </div>
@@ -51,3 +41,16 @@
 
 </x-app-layout>
 
+<script>
+    function toggleOptions(countryId) {
+        document.querySelectorAll("[id^='options-']").forEach(option => {
+            option.classList.add('hidden');
+        });
+
+        const options = document.getElementById(`options-${countryId}`);
+        if (options) {
+            options.classList.toggle('hidden');
+        }
+    }
+
+</script>

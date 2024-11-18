@@ -9,21 +9,22 @@ class B2C extends Model
 {
     use HasFactory;
 
-    protected $table = 'b2c';
+    protected $table = 'b2c'; 
 
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'address',
-        'postal_code',
-        'city',
-        'phone',
-        'gsm',
-        'country_id',
+        'first_name', 
+        'last_name',   
+        'address',     
+        'postal_code', 
+        'ville',       
+        'phone',       
+        'gsm',         
+        'pays_id',     
     ];
 
-    public function country()
+ 
+    public function pays()
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(Pays::class, 'pays_id'); 
     }
 }

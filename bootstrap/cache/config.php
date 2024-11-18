@@ -169,8 +169,8 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\framework/cache/data',
-        'lock_path' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\framework/cache/data',
+        'path' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\framework/cache/data',
+        'lock_path' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -225,7 +225,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'multiauthsystemlaravel11',
+        'database' => 'assurplus',
         'prefix' => '',
         'foreign_key_constraints' => true,
       ),
@@ -235,7 +235,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'multiauthsystemlaravel11',
+        'database' => 'assurplus',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -255,7 +255,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'multiauthsystemlaravel11',
+        'database' => 'assurplus',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -275,7 +275,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'multiauthsystemlaravel11',
+        'database' => 'assurplus',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -290,7 +290,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'multiauthsystemlaravel11',
+        'database' => 'assurplus',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -339,13 +339,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\app',
+        'root' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\app',
         'throw' => false,
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\app/public',
+        'root' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -365,7 +365,7 @@
     ),
     'links' => 
     array (
-      'C:\\xampp\\htdocs\\multi-auth-main\\public\\storage' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\app/public',
+      'C:\\xampp\\htdocs\\gestion_contrat\\public\\storage' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\app/public',
     ),
   ),
   'logging' => 
@@ -390,14 +390,14 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\logs/laravel.log',
+        'path' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\logs/laravel.log',
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\logs/laravel.log',
+        'path' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -462,7 +462,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\logs/laravel.log',
+        'path' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -534,7 +534,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\xampp\\htdocs\\multi-auth-main\\resources\\views/vendor/mail',
+        0 => 'C:\\xampp\\htdocs\\gestion_contrat\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -625,7 +625,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\framework/sessions',
+    'files' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -747,9 +747,9 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\xampp\\htdocs\\multi-auth-main\\resources\\views',
+      0 => 'C:\\xampp\\htdocs\\gestion_contrat\\resources\\views',
     ),
-    'compiled' => 'C:\\xampp\\htdocs\\multi-auth-main\\storage\\framework\\views',
+    'compiled' => 'C:\\xampp\\htdocs\\gestion_contrat\\storage\\framework\\views',
   ),
   'flare' => 
   array (
@@ -834,7 +834,7 @@
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'C:\\xampp\\htdocs\\multi-auth-main',
+    'remote_sites_path' => 'C:\\xampp\\htdocs\\gestion_contrat',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',

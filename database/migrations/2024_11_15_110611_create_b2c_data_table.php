@@ -12,10 +12,10 @@ return new class extends Migration {
             $table->string('last_name');
             $table->string('address');
             $table->string('postal_code');
-            $table->string('city');
+            $table->string('ville');
             $table->string('phone');
             $table->string('gsm')->nullable();
-            $table->foreignId('country_id')->constrained('countries');
+            $table->foreignId('pays_id')->constrained('pays');
             $table->timestamps();
         });
     }

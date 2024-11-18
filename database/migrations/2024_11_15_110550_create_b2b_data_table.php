@@ -8,14 +8,15 @@ return new class extends Migration {
     {
         Schema::create('b2b', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name');
-            $table->string('director_name');
+            $table->string('raison_social');
+            $table->string('dirigeant_name');
+            $table->string('dirigeant_prenom');
             $table->string('address');
             $table->string('postal_code');
-            $table->string('city');
+            $table->string('ville');
             $table->string('phone');
             $table->string('gsm')->nullable();
-            $table->foreignId('country_id')->constrained('countries');
+            $table->foreignId('pays_id')->constrained('pays');
             $table->timestamps();
         });
     }
