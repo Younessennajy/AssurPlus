@@ -20,7 +20,6 @@ class B2B extends Model
         'ville',
         'phone',
         'gsm',
-        'pays_id'
     ];
 
     public function pays()

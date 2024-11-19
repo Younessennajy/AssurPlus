@@ -8,13 +8,13 @@ return new class extends Migration {
     {
         Schema::create('b2b', function (Blueprint $table) {
             $table->id();
-            $table->string('raison_social');
-            $table->string('dirigeant_name');
-            $table->string('dirigeant_prenom');
-            $table->string('address');
-            $table->string('postal_code');
-            $table->string('ville');
-            $table->string('phone');
+            $table->string('raison_social')->nullable();
+            $table->string('dirigeant_name')->nullable();
+            $table->string('dirigeant_prenom')->nullable();
+            $table->string('address')->nullable();;
+            $table->string('postal_code')->nullable();
+            $table->string('ville')->nullable();
+            $table->string('phone')->nullable();
             $table->string('gsm')->nullable();
             $table->foreignId('pays_id')->constrained('pays');
             $table->timestamps();

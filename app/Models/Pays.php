@@ -12,8 +12,8 @@ class Pays extends Model
     protected $table = 'pays'; // Nom de la table dans la base de données
 
     protected $fillable = [
-        'name',       // Nom du pays
-        'indicatif',  // Indicatif téléphonique du pays
+        'name',       
+        'indicatif', 
     ];
 
     /**

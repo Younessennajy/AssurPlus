@@ -19,7 +19,7 @@ class B2C extends Model
         'ville',       
         'phone',       
         'gsm',         
-        'pays_id',     
+        // 'pays_id',     
     ];
 
  

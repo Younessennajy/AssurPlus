@@ -8,11 +8,11 @@ return new class extends Migration {
     {
         Schema::create('b2c', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('address');
-            $table->string('postal_code');
-            $table->string('ville');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('address')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('ville')->nullable();
             $table->string('phone');
             $table->string('gsm')->nullable();
             $table->foreignId('pays_id')->constrained('pays');

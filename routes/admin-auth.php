@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DataController;
+use App\Http\Controllers\ImportController;
 
 Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -48,5 +49,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
     Route::get('/pays/{pays}/b2b', [DataController::class, 'showB2BData'])->name('pays.b2b');
     Route::get('pays/{pays}/b2c', [DataController::class, 'showB2CData'])->name('pays.b2c');
-    
+
+    Route::get('/import', [ImportController::class, 'showMappingForm'])->name('import.show');
+    Route::match(['get', 'post'], 'admin/import/read-headers/{pays}/{type}', [ImportController::class, 'readExcelHeaders'])
+    ->name('import.readHeaders');
+    Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
+    Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
 });
