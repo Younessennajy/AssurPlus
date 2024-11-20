@@ -10,28 +10,24 @@ use Illuminate\Support\Facades\Validator;
 
 class ImportController extends Controller
 {
-    protected $excludedColumns = ['id', 'created_at', 'updated_at'];
-    protected $requiredFields = ['tel'];
+    protected $excludedColumns = ['id', 'created_at', 'updated_at', 'pays_id'];
+    protected $requiredFields = ['tel']; 
+    protected $optionalFields = ['gsm', 'address']; 
+    protected $insertedCount = 0;
+    protected $cuolumnCount = 0;
+
     public function showMappingForm()
     {
-        $selectedTable = $request->input('table'); 
+        $selectedTable = $request->input('table');
         $b2bColumns = $this->getTableColumns('b2b');
         $b2cColumns = $this->getTableColumns('b2c');
         $excelHeaders = [];
-        $optionalFields = ['gsm'];
-        $columns = [];
-        $data = [];
-if ($selectedTable) {
-        $columns = Schema::getColumnListing($selectedTable);
-        $data = DB::table($selectedTable)->limit(10)->get(); // Récupérer les 10 premières lignes pour un aperçu
-    }
-        return view('admin.data.show', compact('b2bColumns', 'b2cColumns', 'excelHeaders', 'optionalFields','requiredFields'));
+        
+        return view('admin.data.show', compact('b2bColumns', 'b2cColumns', 'excelHeaders'));
     }
 
     public function readExcelHeaders(Request $request, $pays, $type)
     {
-        
-
         $validator = Validator::make($request->all(), [
             'file' => 'required|file|mimes:xlsx,csv|max:10240', 
         ]);
@@ -39,7 +35,7 @@ if ($selectedTable) {
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-    
+
         try {
             $file = $request->file('file');
             $excel = Excel::toArray([], $file);
@@ -48,11 +44,9 @@ if ($selectedTable) {
             $path = $file->store('temp');
             session(['temp_excel_file' => $path]);
             
-            // Get only the columns for the selected type (b2b or b2c)
             $columns = $this->getTableColumns($type);
-            $optionalFields = ['gsm'];
             $pays = \App\Models\Pays::where('name', $pays)->first();
-    
+
             return view('admin.data.show', [
                 'type' => $type,
                 'pays' => $pays,
@@ -60,64 +54,64 @@ if ($selectedTable) {
                 'b2bColumns' => $type === 'b2b' ? $columns : [],
                 'b2cColumns' => $type === 'b2c' ? $columns : [],
                 'excelHeaders' => $excelHeaders,
-                'optionalFields' => $optionalFields
             ]);
         } catch (\Exception $e) {
             return back()->withErrors(['file' => 'Error reading file: ' . $e->getMessage()]);
         }
     }
 
-
     public function processImport(Request $request)
-{
-    try {
-        DB::beginTransaction();
+    {
+        try {
+            DB::beginTransaction();
 
-        $pays_id = $request->input('pays_id');
-        session(['pays_id' => $pays_id]);
-
-        $filePath = storage_path('app/' . session('temp_excel_file'));
-        $data = Excel::toArray([], $filePath)[0];
-        $headers = array_shift($data); 
-
-        foreach ($data as $row) {
-            $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping);
+            $pays_id = $request->input('pays_id');
+            session(['pays_id' => $pays_id]);
             
+
+            $filePath = storage_path('app/' . session('temp_excel_file'));
+            $data = Excel::toArray([], $filePath)[0];
+            $headers = array_shift($data);
+
+            $this->insertedCount = 0;
+
+            foreach ($data as $row) {
+                $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping);
+            }
+
+            DB::commit();
+            
+            unlink($filePath);
+            session()->forget('temp_excel_file');
+
+            return redirect()->route('admin.dashboard')->with('success');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Import Error: ' . $e->getMessage());
+            return back()->withErrors(['import' => 'Import failed: ' . $e->getMessage()]);
         }
-        DB::commit();
-        
-        unlink($filePath);
-        session()->forget('temp_excel_file');
-
-        return redirect()->route('admin.dashboard')->with('success', 'Data imported successfully');
-    } catch (\Exception $e) {
-        dd('err');
-
-        // DB::rollBack();
-        \Log::error('Import Error: ' . $e->getMessage());
-        return back()->withErrors(['import' => 'Import failed: ' . $e->getMessage()]);
     }
-}
 
     protected function processRow($row, $b2bMapping, $b2cMapping)
     {
         $pays_id = session('pays_id');
+
         $b2bData = $this->mapRowData($row, $b2bMapping);
-        if (!empty($b2bData)) {
+        
+
+        // if ( isset($b2bData['tel'])) {
             $b2bData['pays_id'] = $pays_id;
             $b2bData['created_at'] = now();
             $b2bData['updated_at'] = now();
-            
             DB::table('b2b')->insert($b2bData);
-        }
+        // }
 
         $b2cData = $this->mapRowData($row, $b2cMapping);
-        if (!empty($b2cData)) {
+        if (!empty($b2cData) && isset($b2cData['tel'])) {
             $b2cData['pays_id'] = $pays_id;
             $b2cData['created_at'] = now();
             $b2cData['updated_at'] = now();
             DB::table('b2c')->insert($b2cData);
-            
         }
     }
 
