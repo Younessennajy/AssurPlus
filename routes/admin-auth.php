@@ -8,7 +8,8 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DataController;
 use App\Http\Controllers\Admin\ExportsController;
-use App\Http\Controllers\ImportController;
+use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\ColumnsController;
 
 Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -72,4 +73,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
     Route::get('/import-history', [ImportController::class, 'history'])->name('import.history');
+
+
+    Route::get('/columns/show', [ColumnsController::class, 'showColumns'])->name('columns.show');
+    Route::post('/columns/add', [ColumnsController::class, 'addColumn'])->name('columns.add');
+    Route::delete('/admin/columns/delete', [ColumnsController::class, 'deleteColumn'])->name('columns.delete');
 });
+
