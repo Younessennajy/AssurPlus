@@ -23,7 +23,7 @@
 
                                 <form action="{{ route('admin.import.process') }}" method="POST" class="p-6">
                                     <input type="hidden" name="pays_id" value="{{ $pays->id }}">
-                                    @csrf
+                                    @csrf   
                                     <h3 class="text-xl font-semibold mb-4">Mapper les colonnes</h3>
                                     <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200">
@@ -74,4 +74,5 @@
             </div>
         </div>
     </div>
+    
 </x-app-layout>

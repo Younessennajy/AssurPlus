@@ -5,6 +5,24 @@
                  @include('admin.layouts.sidebar')
                 <main class="flex-1 p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
                         <div class="bg-white p-6 rounded-lg shadow-sm">
                             <h3 class="text-lg font-semibold text-gray-700">Total Users</h3>
                             <p class="text-3xl font-bold text-gray-900">{{ \App\Models\User::count() }}</p>

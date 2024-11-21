@@ -55,4 +55,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     ->name('import.readHeaders');
     Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
     Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
+
+/* edit b2b */
+    Route::delete('/data/{pays}/{type}/{id}/delete', [DataController::class, 'deleteData'])->name('data.delete');
+    Route::get('/data/{pays}/{type}/{id}/edit', [DataController::class, 'showEditForm'])->name('data.edit');
+    Route::post('/data/{pays}/{type}/{id}/update', [DataController::class, 'updateData'])->name('data.update');
+
 });

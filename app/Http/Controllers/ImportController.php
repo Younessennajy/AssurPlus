@@ -84,7 +84,7 @@ class ImportController extends Controller
             unlink($filePath);
             session()->forget('temp_excel_file');
 
-            return redirect()->route('admin.dashboard')->with('success');
+            return redirect()->route('admin.pays.b2b')->with('success');
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Import Error: ' . $e->getMessage());
@@ -93,27 +93,36 @@ class ImportController extends Controller
     }
 
     protected function processRow($row, $b2bMapping, $b2cMapping)
-    {
-        $pays_id = session('pays_id');
+{
+    $pays_id = session('pays_id');
 
-        $b2bData = $this->mapRowData($row, $b2bMapping);
-        
-
-        // if ( isset($b2bData['tel'])) {
-            $b2bData['pays_id'] = $pays_id;
-            $b2bData['created_at'] = now();
-            $b2bData['updated_at'] = now();
-            DB::table('b2b')->insert($b2bData);
-        // }
-
-        $b2cData = $this->mapRowData($row, $b2cMapping);
-        if (!empty($b2cData) && isset($b2cData['tel'])) {
-            $b2cData['pays_id'] = $pays_id;
-            $b2cData['created_at'] = now();
-            $b2cData['updated_at'] = now();
-            DB::table('b2c')->insert($b2cData);
+    $b2bData = $this->mapRowData($row, $b2bMapping);
+    if (isset($b2bData['phone'])) {
+        $existingB2B = DB::table('b2b')->where('phone', $b2bData['phone'])->exists();
+        if ($existingB2B) {
+            return back()->withErrors($existingB2B)->withInput();
         }
+
+        $b2bData['pays_id'] = $pays_id;
+        $b2bData['created_at'] = now();
+        $b2bData['updated_at'] = now();
+        DB::table('b2b')->insert($b2bData);
     }
+
+    $b2cData = $this->mapRowData($row, $b2cMapping);
+    if (isset($b2cData['phone'])) {
+        $existingB2C = DB::table('b2c')->where('phone', $b2cData['phone'])->exists();
+        if ($existingB2C) {
+            throw new \Exception("Le numéro de téléphone '{$b2cData['phone']}' existe déjà dans B2C.");
+        }
+
+        $b2cData['pays_id'] = $pays_id;
+        $b2cData['created_at'] = now();
+        $b2cData['updated_at'] = now();
+        DB::table('b2c')->insert($b2cData);
+    }
+}
+
 
     protected function mapRowData($row, $mapping)
     {

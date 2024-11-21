@@ -13,6 +13,19 @@
             <div class="bg-white shadow-sm sm:rounded-lg flex flex-col md:flex-row"> 
                 <?php echo $__env->make('admin.layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <main class="p-6 w-full overflow-hidden">
+                    <?php if(session('success')): ?>
+                        <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                            <?php echo e(session('success')); ?>
+
+                        </div>
+                    <?php endif; ?>
+                    <?php if(session('error')): ?>
+                        <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                            <?php echo e(session('error')); ?>
+
+                        </div>
+                    <?php endif; ?>
+
                     <div class="container mx-auto">
                         <div class="mb-6">
                             <h2 class="text-2xl font-semibold">Données <?php echo e(strtoupper($type)); ?> - <?php echo e($pays->name); ?></h2>
@@ -69,7 +82,6 @@ unset($__errorArgs, $__bag); ?>
                             </form>
                         </div>
                     
-                        <!-- Table Container avec scroll horizontal -->
                         <div class="w-full overflow-x-auto relative">
                             <div class="rounded-lg shadow">
                                 
@@ -85,13 +97,13 @@ unset($__errorArgs, $__bag); ?>
                                                         </th>
                                                     <?php endif; ?>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                            <?php else: ?>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                                                    Aucune donnée disponible
-                                                </th>
                                             <?php endif; ?>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Actions
+                                            </th>
                                         </tr>
                                     </thead>
+                                    
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <?php $__empty_1 = true; $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                             <tr class="hover:bg-gray-50">
@@ -103,6 +115,26 @@ unset($__errorArgs, $__bag); ?>
                                                         </td>
                                                     <?php endif; ?>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                <!-- Colonne Actions -->
+                                                <td class="px-6 py-4 text-sm text-gray-900 text-right">
+                                                    <!-- Bouton Modifier -->
+                                                    <a href="<?php echo e(route('admin.data.edit', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id])); ?>" 
+                                                        class="inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                                        Modifier
+                                                    </a>
+                                                    
+                                                    <!-- Bouton Supprimer -->
+                                                    <form action="<?php echo e(route('admin.data.delete', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id])); ?>" 
+                                                        method="POST">
+                                                      <?php echo csrf_field(); ?>
+                                                      <?php echo method_field('DELETE'); ?>
+                                                        <button type="submit" 
+                                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet enregistrement ?')" 
+                                                                class="px-4 py-2 bg-red-500 text-white text-xs rounded-md hover:bg-red-600">
+                                                            Supprimer
+                                                        </button>
+                                                    </form>
+                                                </td>
                                             </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                             <tr>
@@ -112,6 +144,7 @@ unset($__errorArgs, $__bag); ?>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
+                                    
                                 </table>
                             </div>
                         </div>
