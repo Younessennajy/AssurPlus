@@ -34,6 +34,11 @@
                                 <form action="{{ route('admin.import.process') }}" method="POST" class="p-6">
                                     <input type="hidden" name="pays_id" value="{{ $pays->id }}">
                                     @csrf
+                                    <div class="mb-4">
+                                        <label for="tag" class="block text-sm font-medium text-gray-700">Tag</label>
+                                        <input type="text" name="tag" id="tag" 
+                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
                                     <h3 class="text-xl font-semibold mb-4">Mapper les colonnes</h3>
                                     <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200">

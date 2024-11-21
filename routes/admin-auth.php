@@ -67,6 +67,9 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::post('/data/{pays}/{type}/{id}/update', [DataController::class, 'updateData'])->name('data.update');
 
     /* export */
-    Route::post('/admin/export/{pays}/{type}', [ExportsController::class, 'export'])
+    Route::post('/export/{pays}/{type}', [ExportsController::class, 'export'])
     ->name('export');
+
+
+    Route::get('/import-history', [ImportController::class, 'history'])->name('import.history');
 });

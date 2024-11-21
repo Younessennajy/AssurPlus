@@ -19,17 +19,20 @@ Route::middleware('auth')->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Routes pour l'import
-    Route::get('/import', [ImportController::class, 'show'])
-        ->name('import.show')
-        ->middleware('can:import');
+    Route::get('/data/pays', [DataController::class, 'pays'])->name('data.pays');
 
-    // Routes pour l'export
-    Route::get('/export', [ExportController::class, 'show'])
-        ->name('export.show')
-        ->middleware('can:export');
+        Route::get('/pays/{pays}/b2b', [DataController::class, 'showB2BData'])->name('pays.b2b');
+        Route::get('pays/{pays}/b2c', [DataController::class, 'showB2CData'])->name('pays.b2c');
+
+        Route::get('/import', [ImportController::class, 'showMappingForm'])->name('import.show');
+        Route::match(['get', 'post'], 'import/read-headers/{pays}/{type}', [ImportController::class, 'readExcelHeaders'])
+        ->name('import.readHeaders');
+        Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
+        Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
+
+        Route::post('/import/confirm', [ImportController::class, 'confirmImport'])->name('import.confirm');
+        Route::get('/import/cancel', [ImportController::class, 'cancelImport'])->name('import.cancel');
 });
 
 require __DIR__.'/auth.php';

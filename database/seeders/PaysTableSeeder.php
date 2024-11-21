@@ -15,7 +15,6 @@ class PaysTableSeeder extends Seeder
             ['name' => 'Maroc', 'indicatif' => 212],
             ['name' => 'Suisse', 'indicatif' => 41],
         ];
-
         Pays::insert($pays);
     }
 }

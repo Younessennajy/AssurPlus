@@ -14,39 +14,6 @@ class DataController extends Controller
         $pays = Pays::all();
         return view('admin.layouts.sidebar', compact('pays'));
     }
-
-    public function index(Request $request, $pays, $type)
-    {
-        $pays = Pays::where('name', $pays)->firstOrFail();
-        $model = $type === 'b2b' ? B2B::class : B2C::class;
-        
-        $query = $model::where('pays_id', $pays->id);
-
-        // Recherche
-        if ($request->filled('search')) {
-            $search = $request->get('search');
-            $query->where(function($q) use ($search, $model) {
-                foreach ((new $model)->getFillable() as $column) {
-                    $q->orWhere($column, 'LIKE', "%{$search}%");
-                }
-            });
-        }
-
-        // Tri
-        if ($request->filled('sort')) {
-            $sortColumn = $request->get('sort');
-            $sortDirection = $request->get('direction', 'asc');
-            
-            if (in_array($sortColumn, (new $model)->getFillable())) {
-                $query->orderBy($sortColumn, $sortDirection);
-            }
-        }
-
-        $data = $query->paginate(15)->withQueryString();
-        
-        return view('admin.data.index', compact('data', 'pays', 'type'));
-    }
-
     public function showB2BData(Request $request, $pays) 
     {
         $pays = Pays::where('name', $pays)->firstOrFail();

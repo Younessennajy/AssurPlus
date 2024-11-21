@@ -14,9 +14,9 @@ class ImportController extends Controller
     protected $requiredFields = ['tel']; 
     protected $optionalFields = ['gsm', 'address']; 
     protected $insertedCount = 0;
-    protected $cuolumnCount = 0;
+    protected $columnCount = 0;
 
-    public function showMappingForm()
+    public function showMappingForm(Request $request)
     {
         $selectedTable = $request->input('table');
         $b2bColumns = $this->getTableColumns('b2b');
@@ -67,7 +67,6 @@ class ImportController extends Controller
 
             $pays_id = $request->input('pays_id');
             session(['pays_id' => $pays_id]);
-            
 
             $filePath = storage_path('app/' . session('temp_excel_file'));
             $data = Excel::toArray([], $filePath)[0];
@@ -84,7 +83,7 @@ class ImportController extends Controller
             unlink($filePath);
             session()->forget('temp_excel_file');
 
-            return redirect()->route('admin.dashboard')->with('success');
+            return redirect()->route('admin.dashboard')->with('success', 'Import completed successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Import Error: ' . $e->getMessage());
@@ -96,23 +95,25 @@ class ImportController extends Controller
     {
         $pays_id = session('pays_id');
 
-        $b2bData = $this->mapRowData($row, $b2bMapping);
-        
-
-        if ( isset($b2bData['tel'])) {
-            $b2bData['pays_id'] = $pays_id;
-            $b2bData['created_at'] = now();
-            $b2bData['updated_at'] = now();
-            DB::table('b2b')->insert($b2bData);
+        if ($b2bMapping) {
+            $b2bData = $this->mapRowData($row, $b2bMapping);
+            if (!empty($b2bData)) {
+                $b2bData['pays_id'] = $pays_id;
+                $b2bData['created_at'] = now();
+                $b2bData['updated_at'] = now();
+                DB::table('b2b')->insert($b2bData);
+            }
         }
 
-        $b2cData = $this->mapRowData($row, $b2cMapping);
-        // if (isset($b2cData['tel'])) {
-            $b2cData['pays_id'] = $pays_id;
-            $b2cData['created_at'] = now();
-            $b2cData['updated_at'] = now();
-            DB::table('b2c')->insert($b2cData);
-        // }
+        if ($b2cMapping) {
+            $b2cData = $this->mapRowData($row, $b2cMapping);
+            if (!empty($b2cData)) {
+                $b2cData['pays_id'] = $pays_id;
+                $b2cData['created_at'] = now();
+                $b2cData['updated_at'] = now();
+                DB::table('b2c')->insert($b2cData);
+            }
+        }
     }
 
     protected function mapRowData($row, $mapping)
@@ -137,5 +138,14 @@ class ImportController extends Controller
             Schema::getColumnListing($table),
             $this->excludedColumns
         );
+    }
+
+    public function history()
+    {
+        $history = \App\Models\ImportHistory::with(['user', 'pays'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.data.import-history', compact('history'));
     }
 }
