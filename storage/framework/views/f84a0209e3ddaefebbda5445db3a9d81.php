@@ -13,6 +13,18 @@
             <div class="bg-white shadow-sm sm:rounded-lg flex">
                 <?php echo $__env->make('admin.layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <main class="p-6 w-full">
+                    <?php if(session('success')): ?>
+                        <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                            <?php echo e(session('success')); ?>
+
+                        </div>
+                    <?php endif; ?>
+                    <?php if(session('error')): ?>
+                        <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                            <?php echo e(session('error')); ?>
+
+                        </div>
+                    <?php endif; ?>
                     <?php if(isset($pays)): ?>
                         <div class="mb-8">
                             <h2 class="text-2xl font-bold mb-4"><?php echo e($pays->name); ?></h2>
@@ -32,7 +44,7 @@
 
                                 <form action="<?php echo e(route('admin.import.process')); ?>" method="POST" class="p-6">
                                     <input type="hidden" name="pays_id" value="<?php echo e($pays->id); ?>">
-                                    <?php echo csrf_field(); ?>   
+                                    <?php echo csrf_field(); ?>
                                     <h3 class="text-xl font-semibold mb-4">Mapper les colonnes</h3>
                                     <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200">
@@ -85,7 +97,6 @@
             </div>
         </div>
     </div>
-    
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

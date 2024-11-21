@@ -4,6 +4,16 @@
             <div class="bg-white shadow-sm sm:rounded-lg flex">
                 @include('admin.layouts.sidebar')
                 <main class="p-6 w-full">
+                    @if(session('success'))
+                        <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     @if(isset($pays))
                         <div class="mb-8">
                             <h2 class="text-2xl font-bold mb-4">{{ $pays->name }}</h2>
@@ -23,7 +33,7 @@
 
                                 <form action="{{ route('admin.import.process') }}" method="POST" class="p-6">
                                     <input type="hidden" name="pays_id" value="{{ $pays->id }}">
-                                    @csrf   
+                                    @csrf
                                     <h3 class="text-xl font-semibold mb-4">Mapper les colonnes</h3>
                                     <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200">
@@ -74,5 +84,4 @@
             </div>
         </div>
     </div>
-    
 </x-app-layout>

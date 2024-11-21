@@ -4,18 +4,64 @@
             <div class="bg-white shadow-sm sm:rounded-lg flex flex-col md:flex-row">
                 @include('admin.layouts.sidebar')
                 <main class="p-6 w-full overflow-hidden">
+                    @if(session('success'))
+                        <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <div class="container mx-auto">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-semibold">Données {{ strtoupper($type) }} - {{ $pays->name }}</h2>
-                            
-                            <form action="{{ route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => $type]) }}" 
-                                method="POST" 
-                                enctype="multipart/form-data" 
-                                class="bg-gray-50 p-4 rounded-lg border mt-4">
+                        <div class="mb-8">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
+                                <div>
+                                    <h1 class="text-3xl font-bold mb-2">{{ $pays->name }}</h1>
+                                    <h2 class="text-xl opacity-90">Données {{ strtoupper($type) }}</h2>
+                                </div>
+                                
+                                <!-- Formulaire d'exportation -->
+                                <form action="{{ route('admin.export', ['pays' => $pays->name, 'type' => $type]) }}" 
+                                      method="POST" 
+                                      class="mt-4 md:mt-0">
+                                    @csrf
+                                    <div class="flex flex-col md:flex-row gap-4">
+                                        <div class="relative">
+                                            <select name="format" 
+                                                    id="export_format" 
+                                                    class="bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 appearance-none w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-white/50">
+                                                <option value="xlsx" class="text-gray-900">Excel (XLSX)</option>
+                                                <option value="csv" class="text-gray-900">CSV</option>
+                                            </select>
+                                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <button type="submit" 
+                                                class="inline-flex items-center px-6 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-semibold">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                            </svg>
+                                            Exporter
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Formulaire d'import -->
+                            <form action="{{ route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => 'b2b']) }}" 
+                                  method="POST" 
+                                  enctype="multipart/form-data" 
+                                  class="bg-gray-50 p-6 rounded-lg border mt-6 shadow-sm">
                                 @csrf
-                                <div class="flex items-center gap-4">
-                                    <div class="flex-grow">
-                                        <label for="file" class="block text-sm font-medium text-gray-700 mb-1">
+                                <div class="flex flex-col md:flex-row items-center gap-4">
+                                    <div class="flex-grow w-full">
+                                        <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
                                             Importer un fichier Excel
                                         </label>
                                         <input type="file" 
@@ -27,18 +73,24 @@
                                                       file:rounded-md file:border-0
                                                       file:text-sm file:font-semibold
                                                       file:bg-blue-50 file:text-blue-700
-                                                      hover:file:bg-blue-100" 
+                                                      hover:file:bg-blue-100
+                                                      cursor-pointer" 
                                                required>
                                     </div>
                                     <button type="submit" 
-                                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                            class="w-full md:w-auto px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                        </svg>
                                         Charger
                                     </button>
                                 </div>
                                 @error('file')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </form>
+
+                            <!-- Reste du code... -->
 
                             <!-- Formulaire de recherche -->
                             <form action="{{ route('admin.pays.' . $type, ['pays' => $pays->name]) }}" method="GET" class="mt-4">

@@ -55,6 +55,7 @@
                 Paramètres
             </button>
         </a>
+        
     </nav>
 </aside>
 
