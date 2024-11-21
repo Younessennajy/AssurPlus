@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg flex flex-col md:flex-row">
-                @include('admin.layouts.sidebar')
+                @include('layouts.sidebar')
                 <main class="p-6 w-full overflow-hidden">
                     @if(session('success'))
                         <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
@@ -24,7 +24,7 @@
                                 </div>
                                 
                                 <!-- Formulaire d'exportation -->
-                                <form action="{{ route('admin.export', ['pays' => $pays->name, 'type' => $type]) }}" 
+                                <form action="{{ route('export', ['pays' => $pays->name, 'type' => $type]) }}" 
                                       method="POST" 
                                       class="mt-4 md:mt-0">
                                     @csrf
@@ -54,7 +54,7 @@
                             </div>
 
                             <!-- Formulaire d'import -->
-                            <form action="{{ route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => 'b2b']) }}" 
+                            <form action="{{ route('import.readHeaders', ['pays' => $pays->name, 'type' => 'b2b']) }}" 
                                   method="POST" 
                                   enctype="multipart/form-data" 
                                   class="bg-gray-50 p-6 rounded-lg border mt-6 shadow-sm">
@@ -93,7 +93,7 @@
                             <!-- Reste du code... -->
 
                             <!-- Formulaire de recherche -->
-                            <form action="{{ route('admin.pays.' . $type, ['pays' => $pays->name]) }}" method="GET" class="mt-4">
+                            <form action="{{ route('pays.' . $type, ['pays' => $pays->name]) }}" method="GET" class="mt-4">
                                 <div class="flex gap-2">
                                     <input type="text" 
                                            name="search" 
@@ -143,7 +143,7 @@
                                                     @endunless
                                                 @endforeach
                                                 <!-- Colonne Actions -->
-                                                <td class="px-6 py-4 text-sm text-gray-900 text-right">
+                                                {{-- <td class="px-6 py-4 text-sm text-gray-900 text-right">
                                                     <!-- Bouton Modifier -->
                                                     <a href="{{ route('admin.data.edit', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id]) }}" 
                                                         class="inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -161,7 +161,7 @@
                                                             Supprimer
                                                         </button>
                                                     </form>
-                                                </td>
+                                                </td> --}}
                                             </tr>
                                         @empty
                                             <tr>

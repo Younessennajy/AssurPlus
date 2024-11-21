@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,7 +14,7 @@ class ImportController extends Controller
     protected $excludedColumns = ['id', 'created_at', 'updated_at', 'pays_id'];
     protected $requiredFields = ['tel']; 
     protected $optionalFields = ['gsm', 'address']; 
-    protected $insertedCount = 0;
+    protected $insertedCount = 0;   
     protected $columnCount = 0;
 
     public function showMappingForm(Request $request)
@@ -23,7 +24,7 @@ class ImportController extends Controller
         $b2cColumns = $this->getTableColumns('b2c');
         $excelHeaders = [];
         
-        return view('admin.data.show', compact('b2bColumns', 'b2cColumns', 'excelHeaders'));
+        return view('user.data.show', compact('b2bColumns', 'b2cColumns', 'excelHeaders'));
     }
 
     public function readExcelHeaders(Request $request, $pays, $type)
@@ -47,7 +48,7 @@ class ImportController extends Controller
             $columns = $this->getTableColumns($type);
             $pays = \App\Models\Pays::where('name', $pays)->first();
 
-            return view('admin.data.show', [
+            return view('user.data.show', [
                 'type' => $type,
                 'pays' => $pays,
                 'pays_id' => $pays->id,
@@ -83,7 +84,7 @@ class ImportController extends Controller
             unlink($filePath);
             session()->forget('temp_excel_file');
 
-            return redirect()->route('admin.dashboard')->with('success', 'Import completed successfully');
+            return redirect()->route('dashboard')->with('success', 'Import completed successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Import Error: ' . $e->getMessage());
@@ -146,6 +147,6 @@ class ImportController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        return view('admin.data.import-history', compact('history'));
+        return view('user.data.import-history', compact('history'));
     }
 }

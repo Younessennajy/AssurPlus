@@ -23,5 +23,9 @@ class AppServiceProvider extends ServiceProvider
         View::composer('admin.layouts.sidebar', function ($view) {
             $view->with('pays', Pays::all());
         });
+
+        View::composer('layouts.sidebar', function ($view) {
+            $view->with('pays', Pays::all());
+        });
     }
 }

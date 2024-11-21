@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg flex">
-                @include('admin.layouts.sidebar')
+                @include('layouts.sidebar')
                 <main class="p-6 w-full">
                     @if(session('success'))
                         <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
@@ -20,18 +20,18 @@
                             <div class="bg-white rounded-lg shadow">
                                 <div class="border-b">
                                     <nav class="-mb-px flex">
-                                        <a href="{{ route('admin.pays.b2b', $pays->name) }}" method="POST" 
+                                        <a href="{{ route('pays.b2b', $pays->name) }}" method="POST" 
                                            class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm {{ $type === 'b2b' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                                             Données B2B
                                         </a>
-                                        <a href="{{ route('admin.pays.b2c', $pays->name) }}" method="POST" 
+                                        <a href="{{ route('pays.b2c', $pays->name) }}" method="POST" 
                                            class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm {{ $type === 'b2c' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                                             Données B2C
                                         </a>
                                     </nav>
                                 </div>
 
-                                <form action="{{ route('admin.import.process') }}" method="POST" class="p-6">
+                                <form action="{{ route('import.process') }}" method="POST" class="p-6">
                                     <input type="hidden" name="pays_id" value="{{ $pays->id }}">
                                     @csrf
                                     <div class="mb-4">
