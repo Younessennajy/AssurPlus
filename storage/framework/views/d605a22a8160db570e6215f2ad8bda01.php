@@ -65,7 +65,7 @@
                             </div>
 
                             <!-- Formulaire d'import -->
-                            <form action="<?php echo e(route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => 'b2b'])); ?>" 
+                            <form action="<?php echo e(route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => 'b2c'])); ?>" 
                                   method="POST" 
                                   enctype="multipart/form-data" 
                                   class="bg-gray-50 p-6 rounded-lg border mt-6 shadow-sm">
@@ -107,8 +107,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                             </form>
-
-                            <!-- Reste du code... -->
 
                             <!-- Formulaire de recherche -->
                             <form action="<?php echo e(route('admin.pays.' . $type, ['pays' => $pays->name])); ?>" method="GET" class="mt-4">

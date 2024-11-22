@@ -22,7 +22,6 @@ class ImportController extends Controller
         $b2bColumns = $this->getTableColumns('b2b');
         $b2cColumns = $this->getTableColumns('b2c');
         $excelHeaders = [];
-        
         return view('admin.data.show', compact('b2bColumns', 'b2cColumns', 'excelHeaders'));
     }
 

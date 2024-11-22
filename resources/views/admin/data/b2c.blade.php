@@ -54,7 +54,7 @@
                             </div>
 
                             <!-- Formulaire d'import -->
-                            <form action="{{ route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => 'b2b']) }}" 
+                            <form action="{{ route('admin.import.readHeaders', ['pays' => $pays->name, 'type' => 'b2c']) }}" 
                                   method="POST" 
                                   enctype="multipart/form-data" 
                                   class="bg-gray-50 p-6 rounded-lg border mt-6 shadow-sm">
@@ -89,8 +89,6 @@
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </form>
-
-                            <!-- Reste du code... -->
 
                             <!-- Formulaire de recherche -->
                             <form action="{{ route('admin.pays.' . $type, ['pays' => $pays->name]) }}" method="GET" class="mt-4">
