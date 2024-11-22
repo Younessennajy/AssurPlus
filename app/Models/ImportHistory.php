@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -8,19 +9,12 @@ class ImportHistory extends Model
     protected $table = 'import_history';
     
     protected $fillable = [
-        'user_id',
         'table_type',
         'pays_id',
-        'filename',
-        'records_imported',
+        'user_name',
         'tag',
-        'is_admin'
+        'action',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function pays()
     {

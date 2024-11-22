@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\ImportHistory;
+use App\Models\Pays;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ImportController extends Controller
 {
@@ -44,9 +48,10 @@ class ImportController extends Controller
     
             $path = $file->store('temp');
             session(['temp_excel_file' => $path]);
+            session(['original_filename' => $file->getClientOriginalName()]);
             
             $columns = $this->getTableColumns($type);
-            $pays = \App\Models\Pays::where('name', $pays)->first();
+            $pays = Pays::where('name', $pays)->first();
 
             return view('user.data.show', [
                 'type' => $type,
@@ -67,35 +72,58 @@ class ImportController extends Controller
             DB::beginTransaction();
 
             $pays_id = $request->input('pays_id');
-            session(['pays_id' => $pays_id]);
-
+            $filename = session('original_filename');
             $filePath = storage_path('app/' . session('temp_excel_file'));
+            
             $data = Excel::toArray([], $filePath)[0];
             $headers = array_shift($data);
+
+            $userName = Auth::check() ? Auth::user()->name : 'user';
 
             $this->insertedCount = 0;
 
             foreach ($data as $row) {
-                $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping);
+                $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping, $pays_id);
+            }
+
+            if ($request->b2b_mapping) {
+                ImportHistory::create([
+                    'table_type' => 'b2b',
+                    'pays_id' => $pays_id,
+                    'user_name' => $userName,
+                    'tag' => $request->input('tag', 'Import B2B'),
+                    'action' => 'import',
+                ]);
+            }
+
+            // Enregistrer l'historique pour B2C
+            if ($request->b2c_mapping) {
+                ImportHistory::create([
+                    'table_type' => 'b2c',
+                    'pays_id' => $pays_id,
+                    'user_name' => $userName,
+                    'tag' => $request->input('tag', 'Import B2C'),
+                    'action' => 'import',
+                ]);
             }
 
             DB::commit();
             
-            unlink($filePath);
-            session()->forget('temp_excel_file');
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            session()->forget(['temp_excel_file', 'original_filename']);
 
-            return redirect()->route('dashboard')->with('success', 'Import completed successfully');
+            return redirect()->route('dashboard')
+                ->with('success', 'Import completed successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Import Error: ' . $e->getMessage());
             return back()->withErrors(['import' => 'Import failed: ' . $e->getMessage()]);
         }
     }
 
-    protected function processRow($row, $b2bMapping, $b2cMapping)
+    protected function processRow($row, $b2bMapping, $b2cMapping, $pays_id)
     {
-        $pays_id = session('pays_id');
-
         if ($b2bMapping) {
             $b2bData = $this->mapRowData($row, $b2bMapping);
             if (!empty($b2bData)) {
@@ -126,7 +154,7 @@ class ImportController extends Controller
 
         foreach ($mapping as $column => $index) {
             if (!empty($index) && isset($row[$index])) {
-                $data[$column] = $row[$index];
+                $data[$column] = trim($row[$index]);
             }
         }
 
@@ -143,7 +171,7 @@ class ImportController extends Controller
 
     public function history()
     {
-        $history = \App\Models\ImportHistory::with(['user', 'pays'])
+        $history = ImportHistory::with('pays')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 

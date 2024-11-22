@@ -78,5 +78,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::get('/columns/show', [ColumnsController::class, 'showColumns'])->name('columns.show');
     Route::post('/columns/add', [ColumnsController::class, 'addColumn'])->name('columns.add');
     Route::delete('/admin/columns/delete', [ColumnsController::class, 'deleteColumn'])->name('columns.delete');
+
+
+    Route::post('/pays/add', [DataController::class, 'add'])->name('pays.add');
+    Route::delete('/pays/delete/{id}', [DataController::class, 'delete'])->name('pays.delete');
+
 });
 

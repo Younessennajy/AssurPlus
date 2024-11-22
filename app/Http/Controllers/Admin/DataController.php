@@ -135,5 +135,36 @@ public function updateData(Request $request, $pays, $type, $id)
 }
 
 
+    public function add(Request $request)
+    {
+        $request->validate([
+            'pays' => 'required|string|max:255|unique:pays,name',
+        ]);
+    
+        $pays = new Pays();
+        $pays->name = $request->input('pays');
+        $pays->indicatif = $request->input('indicatif');
+        $pays->save();
+        return redirect()->back()->with('success', 'Pays ajouté avec succès.');
+    }
+
+    public function delete($id)
+    {
+        $pays = Pays::find($id);
+
+        if (!$pays) {
+            return redirect()->back()->with('error', 'Pays introuvable.');
+        }
+
+        $pays->delete();
+
+        return redirect()->back()->with('success', 'Pays supprimé avec succès.');
+    }
+
+    
+
+    
+
+
 
 }

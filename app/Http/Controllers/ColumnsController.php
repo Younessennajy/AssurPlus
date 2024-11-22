@@ -12,11 +12,11 @@ class ColumnsController extends Controller
 {
     public function showColumns()
     {
+        $pays = Pays::All(); 
         $b2bColumns = \Schema::getColumnListing('b2b');
         
         $b2cColumns = \Schema::getColumnListing('b2c');
-        
-        return view('admin.columns.show', compact('b2bColumns', 'b2cColumns'));
+        return view('admin.columns.show', compact('b2bColumns', 'b2cColumns','pays'));
     }
     public function addColumn(Request $request)
     {

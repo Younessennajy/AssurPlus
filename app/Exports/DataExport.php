@@ -100,7 +100,6 @@ class DataExport implements FromQuery, WithHeadings, WithTitle, WithStyles
 
     public function styles(Worksheet $sheet)
     {
-        // Détermine le nombre de colonnes en fonction du type
         $lastCol = $this->type === 'b2c' ? 'I' : 'J';
 
         $sheet->getStyle('A1:'.$lastCol.'1')->applyFromArray([

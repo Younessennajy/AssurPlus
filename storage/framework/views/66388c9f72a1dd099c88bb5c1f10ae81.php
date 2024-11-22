@@ -21,28 +21,30 @@
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pays</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tag</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Records</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Admin</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">user</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <?php $__currentLoopData = $history; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $record): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr>
-                                                <td class="px-6 py-4"><?php echo e($record->created_at); ?></td>
-                                                <td class="px-6 py-4"><?php echo e($record->user->name); ?></td>
+                                                <td class="px-6 py-4"><?php echo e($record->created_at->format('d/m/Y H:i')); ?></td>
                                                 <td class="px-6 py-4"><?php echo e(strtoupper($record->table_type)); ?></td>
-                                                <td class="px-6 py-4"><?php echo e($record->pays->name); ?></td>
+                                                <td class="px-6 py-4"><?php echo e($record->pays->name ?? 'N/A'); ?></td>
                                                 <td class="px-6 py-4"><?php echo e($record->tag); ?></td>
-                                                <td class="px-6 py-4"><?php echo e($record->records_imported); ?></td>
-                                                <td class="px-6 py-4"><?php echo e($record->is_admin ? 'Oui' : 'Non'); ?></td>
+                                                <td class="px-6 py-4"><?php echo e($record->username); ?></td>
+                                                <td class="px-6 py-4"><?php echo e($record->action); ?></td>
                                             </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>
+                                <div class="mt-4">
+                                    <?php echo e($history->links()); ?>
+
+                                </div>
                             </div>
                         </div>
                     </div>
