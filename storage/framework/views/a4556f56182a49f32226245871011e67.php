@@ -27,6 +27,7 @@
                     <?php endif; ?>
 
                     <div class="container mx-auto">
+                        <!-- En-tête avec titre et bouton d'export -->
                         <div class="mb-8">
                             <div class="flex flex-col md:flex-row md:items-center justify-between bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
                                 <div>
@@ -108,32 +109,59 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </form>
 
-                            <!-- Reste du code... -->
-                            <form action="<?php echo e(route('admin.pays.' . $type, ['pays' => $pays->name])); ?>" method="GET" class="mt-4">
-                                <div class="flex gap-2">
-                                    <input type="text" 
-                                           name="search" 
-                                           value="<?php echo e(request('search')); ?>"
-                                           class="w-80 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Rechercher...">
-                                    <button type="submit" 
-                                            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                                        Rechercher
+                            <!-- Système de filtrage avec colonnes -->
+                            <div class="mt-6 bg-gray-50 p-6 rounded-lg border shadow-sm">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-medium text-gray-900">Configuration des colonnes</h3>
+                                    <button type="button" 
+                                            id="toggleAll" 
+                                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm">
+                                        Tout afficher/masquer
                                     </button>
                                 </div>
-                            </form>
+                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="columnToggles">
+                                    <?php if($data->count() > 0): ?>
+                                        <?php $__currentLoopData = $data->first()->getAttributes(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php if (! (in_array($column, ['id', 'pays_id', 'created_at', 'updated_at']))): ?>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" 
+                                                           class="column-toggle form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                                           data-column="<?php echo e($column); ?>"
+                                                           checked>
+                                                    <span class="ml-2 text-sm text-gray-700"><?php echo e($column); ?></span>
+                                                </label>
+                                            <?php endif; ?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
-                    
+
+                        <form action="<?php echo e(route('admin.pays.' . $type, ['pays' => $pays->name])); ?>" method="GET" class="mt-4">
+                            <div class="flex gap-2">
+                                <input type="text" 
+                                       name="search" 
+                                       value="<?php echo e(request('search')); ?>"
+                                       class="w-80 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Rechercher...">
+                                <button type="submit" 
+                                        class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                    Rechercher
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Table des données -->
                         <div class="w-full overflow-x-auto relative">
                             <div class="rounded-lg shadow">
-                                
                                 <table class="w-full whitespace-nowrap">
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <?php if($data->count() > 0): ?>
                                                 <?php $__currentLoopData = $data->first()->getAttributes(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <?php if (! (in_array($column, ['id', 'pays_id', 'created_at', 'updated_at']))): ?>
-                                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider column-header"
+                                                            data-column="<?php echo e($column); ?>">
                                                             <?php echo e($column); ?>
 
                                                         </th>
@@ -145,37 +173,36 @@ unset($__errorArgs, $__bag); ?>
                                             </th>
                                         </tr>
                                     </thead>
-                                    
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <?php $__empty_1 = true; $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                             <tr class="hover:bg-gray-50">
                                                 <?php $__currentLoopData = $row->getAttributes(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <?php if (! (in_array($column, ['id', 'pays_id', 'created_at', 'updated_at']))): ?>
-                                                        <td class="px-6 py-4 text-sm text-gray-900">
+                                                        <td class="px-6 py-4 text-sm text-gray-900 column-data"
+                                                            data-column="<?php echo e($column); ?>">
                                                             <?php echo e($value); ?>
 
                                                         </td>
                                                     <?php endif; ?>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                <!-- Colonne Actions -->
                                                 <td class="px-6 py-4 text-sm text-gray-900 text-right">
-                                                    <!-- Bouton Modifier -->
-                                                    <a href="<?php echo e(route('admin.data.edit', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id])); ?>" 
-                                                        class="inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                                        Modifier
-                                                    </a>
-                                                    
-                                                    <!-- Bouton Supprimer -->
-                                                    <form action="<?php echo e(route('admin.data.delete', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id])); ?>" 
-                                                        method="POST">
-                                                      <?php echo csrf_field(); ?>
-                                                      <?php echo method_field('DELETE'); ?>
-                                                        <button type="submit" 
-                                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet enregistrement ?')" 
-                                                                class="px-4 py-2 bg-red-500 text-white text-xs rounded-md hover:bg-red-600">
-                                                            Supprimer
-                                                        </button>
-                                                    </form>
+                                                    <div class="flex justify-end gap-2">
+                                                        <a href="<?php echo e(route('admin.data.edit', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id])); ?>" 
+                                                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                                            Modifier
+                                                        </a>
+                                                        <form action="<?php echo e(route('admin.data.delete', ['pays' => $pays->name, 'type' => $type, 'id' => $row->id])); ?>" 
+                                                              method="POST" 
+                                                              class="inline-block">
+                                                            <?php echo csrf_field(); ?>
+                                                            <?php echo method_field('DELETE'); ?>
+                                                            <button type="submit" 
+                                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet enregistrement ?')"
+                                                                    class="px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                                                Supprimer
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -186,7 +213,6 @@ unset($__errorArgs, $__bag); ?>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
-                                    
                                 </table>
                             </div>
                         </div>
@@ -220,7 +246,64 @@ unset($__errorArgs, $__bag); ?>
                 padding-right: 1rem;
             }
         }
+
+        .column-header.hidden,
+        .column-data.hidden {
+            display: none;
+        }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('.column-toggle');
+            const toggleAllButton = document.getElementById('toggleAll');
+            let allChecked = true;
+
+            function updateColumnVisibility(columnName, isVisible) {
+                const headers = document.querySelectorAll(`.column-header[data-column="${columnName}"]`);
+                const cells = document.querySelectorAll(`.column-data[data-column="${columnName}"]`);
+                
+                headers.forEach(header => {
+                    if (isVisible) {
+                        header.classList.remove('hidden');
+                    } else {
+                        header.classList.add('hidden');
+                    }
+                });
+
+                cells.forEach(cell => {
+                    if (isVisible) {
+                        cell.classList.remove('hidden');
+                    } else {
+                        cell.classList.add('hidden');
+                    }
+                });
+            }
+
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const column = this.dataset.column;
+                    updateColumnVisibility(column, this.checked);
+                });
+            });
+
+            toggleAllButton.addEventListener('click', function() {
+                allChecked = !allChecked;
+                toggles.forEach(toggle => {
+                    toggle.checked = allChecked;
+                    updateColumnVisibility(toggle.dataset.column, allChecked);
+                });
+            });
+
+            const resetButton = document.querySelector('button[type="reset"]');
+            if (resetButton) {
+                resetButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = window.location.pathname;
+                });
+            }
+        });
+    </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
