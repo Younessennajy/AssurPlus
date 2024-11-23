@@ -85,13 +85,14 @@ class ImportController extends Controller
             foreach ($data as $row) {
                 $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping, $pays_id);
             }
-
+            $dateImport = now()->format('Y-m-d H:i:s');
+            $pays = Pays::find($pays_id);
             if ($request->b2b_mapping) {
                 ImportHistory::create([
                     'table_type' => 'b2b',
                     'pays_id' => $pays_id,
                     'user_name' => $userName,
-                    'tag' => $request->input('tag', 'Import B2B'),
+                    'tag' => "Import B2B - {$pays->name} - {$dateImport}",
                     'action' => 'import',
                 ]);
             }
@@ -102,7 +103,7 @@ class ImportController extends Controller
                     'table_type' => 'b2c',
                     'pays_id' => $pays_id,
                     'user_name' => $userName,
-                    'tag' => $request->input('tag', 'Import B2C'),
+                    'tag' => "Import B2B - {$pays->name} - {$dateImport}",
                     'action' => 'import',
                 ]);
             }

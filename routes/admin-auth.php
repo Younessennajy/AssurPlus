@@ -9,7 +9,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DataController;
 use App\Http\Controllers\Admin\ExportsController;
 use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ColumnsController;
+use App\Http\Controllers\Admin\AdminProfileController;
 
 Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -25,12 +27,11 @@ Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(functio
 
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
     
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->middleware(['verified'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 

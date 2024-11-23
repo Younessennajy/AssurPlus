@@ -8,171 +8,174 @@
 <?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
-    <div class="py-12">
+    <div class="py-12 bg-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg flex">
+            <div class="bg-white shadow-lg sm:rounded-lg flex overflow-hidden">
                 <!-- Sidebar -->
                 <?php echo $__env->make('admin.layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                 <!-- Main Content -->
-                <div class="w-full p-6">
-                    <h2 class="text-2xl font-semibold mb-6">Gestion des Colonnes et Pays</h2>
+                <div class="w-full p-8 bg-gray-50">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 border-b-2 border-blue-500 pb-4">
+                        Gestion des Colonnes et Pays
+                    </h2>
+                    <?php if(session('success')): ?>
+                        <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                            <?php echo e(session('success')); ?>
 
-                    <!-- Gestion des pays -->
-                    <div class="mb-8">
-                        <h3 class="text-xl font-medium mb-4">Liste des Pays</h3>
-                        <table class="min-w-full bg-white border border-gray-200 rounded-md">
-                            <thead>
-                                <tr class="bg-gray-100 text-left">
-                                    <th class="p-2 border-b border-gray-200 text-sm font-medium">Nom du Pays</th>
-                                    <th class="p-2 border-b border-gray-200 text-sm font-medium text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $__currentLoopData = $pays; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <tr>
-                                    <td class="p-2 border-b border-gray-200 text-sm"><?php echo e($country->name); ?></td>
-                                    <td class="p-2 border-b border-gray-200 text-sm text-center">
-                                        <form action="<?php echo e(route('admin.pays.delete', $country->id)); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce pays ?');">
-                                            <?php echo csrf_field(); ?>
-                                            <?php echo method_field('DELETE'); ?>
-                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md">
-                                                Supprimer
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    <?php endif; ?>
+                    <?php if(session('error')): ?>
+                        <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                            <?php echo e(session('error')); ?>
 
-                            </tbody>
-                        </table>
+                        </div>
+                    <?php endif; ?>
+                    <!-- Gestion des Pays -->
+                    <div class="mb-12">
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Liste des Pays</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full border border-gray-300 bg-white rounded-lg shadow">
+                                <thead>
+                                    <tr class="bg-blue-500 text-white text-sm">
+                                        <th class="p-3 text-left font-medium">Nom du Pays</th>
+                                        <th class="p-3 text-center font-medium">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $__currentLoopData = $pays; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border-b text-gray-700 text-sm"><?php echo e($country->name); ?></td>
+                                        <td class="p-3 border-b text-center">
+                                            <form action="<?php echo e(route('admin.pays.delete', $country->id)); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce pays ?');">
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('DELETE'); ?>
+                                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md">
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <!-- Ajouter un pays -->
-                        <form action="<?php echo e(route('admin.pays.add')); ?>" method="POST" class="mt-4">
+                        <!-- Ajouter un Pays -->
+                        <form action="<?php echo e(route('admin.pays.add')); ?>" method="POST" class="mt-6 flex gap-4 items-center">
                             <?php echo csrf_field(); ?>
-                            <label for="pays" class="block text-sm font-medium">Ajouter un pays</label>
-                            <div class="flex items-center mt-2">
-                                <input 
-                                    type="text" 
-                                    id="pays" 
-                                    name="pays" 
-                                    class="flex-1 border rounded-l-md p-2 focus:outline-none focus:ring focus:border-blue-300" 
-                                    placeholder="Nom du pays">
-                                    <div class="mt-4">
-                                        <label for="indicatif" class="block text-sm font-medium">Indicatif (optionnel)</label>
-                                        <input type="text" name="indicatif" id="indicatif" class="border p-2 rounded">
-                                    </div>
-                                <button 
-                                    type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r-md">
-                                    Ajouter
-                                </button>
+                            <div class="flex-1">
+                                <label for="pays" class="block text-sm font-medium text-gray-700 ">Ajouter un pays</label>
+                                <input type="text" id="pays" name="pays" 
+                                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-300"
+                                       placeholder="Nom du pays">
                             </div>
-                            
+                            <div class="flex-1">
+                                <label for="indicatif" class="block text-sm font-medium text-gray-700 mb-1">Indicatif (optionnel)</label>
+                                <input type="text" id="indicatif" name="indicatif" 
+                                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-300"
+                                       placeholder="+212">
+                            </div>
+                            <button type="submit" 
+                                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg mt-6">
+                                Ajouter
+                            </button>
                         </form>
                     </div>
 
                     <!-- Gestion des Colonnes -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <!-- Colonnes B2B -->
-                        <div class="bg-gray-50 p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-medium mb-4">Colonnes B2B</h3>
-                            <table class="min-w-full bg-white border border-gray-200 rounded-md">
-                                <thead>
-                                    <tr class="bg-gray-100 text-left">
-                                        <th class="p-2 border-b border-gray-200 text-sm font-medium">Nom de la colonne</th>
-                                        <th class="p-2 border-b border-gray-200 text-sm font-medium text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $__currentLoopData = $b2bColumns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <tr>
-                                        <td class="p-2 border-b border-gray-200 text-sm"><?php echo e($column); ?></td>
-                                        <td class="p-2 border-b border-gray-200 text-sm text-center">
-                                            <form action="<?php echo e(route('admin.columns.delete')); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette colonne ?');">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('DELETE'); ?>
-                                                <input type="hidden" name="type" value="b2b">
-                                                <input type="hidden" name="column" value="<?php echo e($column); ?>">
-                                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md">
-                                                    Supprimer
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </tbody>
-                            </table>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Colonnes B2B</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full border border-gray-300 bg-gray-50 rounded-lg shadow">
+                                    <thead>
+                                        <tr class="bg-blue-500 text-white text-sm">
+                                            <th class="p-3 text-left font-medium">Nom de la Colonne</th>
+                                            <th class="p-3 text-center font-medium">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $__currentLoopData = $b2bColumns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr class="hover:bg-blue-50">
+                                            <td class="p-3 border-b text-gray-700 text-sm"><?php echo e($column); ?></td>
+                                            <td class="p-3 border-b text-center">
+                                                <form action="<?php echo e(route('admin.columns.delete')); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette colonne ?');">
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
+                                                    <input type="hidden" name="type" value="b2b">
+                                                    <input type="hidden" name="column" value="<?php echo e($column); ?>">
+                                                    <button type="submit" 
+                                                            class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md">
+                                                        Supprimer
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <!-- Ajouter une colonne -->
-                            <form action="<?php echo e(route('admin.columns.add')); ?>" method="POST" class="mt-4">
+                            <!-- Ajouter une Colonne -->
+                            <form action="<?php echo e(route('admin.columns.add')); ?>" method="POST" class="mt-6 flex items-center gap-4">
                                 <?php echo csrf_field(); ?>
                                 <input type="hidden" name="type" value="b2b">
-                                <label for="b2b_column" class="block text-sm font-medium">Ajouter une colonne</label>
-                                <div class="flex items-center mt-2">
-                                    <input 
-                                        type="text" 
-                                        id="b2b_column" 
-                                        name="column" 
-                                        class="flex-1 border rounded-l-md p-2 focus:outline-none focus:ring focus:border-blue-300" 
-                                        placeholder="Nom de la colonne">
-                                    <button 
-                                        type="submit" 
-                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r-md">
-                                        Ajouter
-                                    </button>
-                                </div>
+                                <input type="text" id="b2b_column" name="column" 
+                                       class="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-300"
+                                       placeholder="Nom de la colonne">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg">
+                                    Ajouter
+                                </button>
                             </form>
                         </div>
 
                         <!-- Colonnes B2C -->
-                        <div class="bg-gray-50 p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-medium mb-4">Colonnes B2C</h3>
-                            <table class="min-w-full bg-white border border-gray-200 rounded-md">
-                                <thead>
-                                    <tr class="bg-gray-100 text-left">
-                                        <th class="p-2 border-b border-gray-200 text-sm font-medium">Nom de la colonne</th>
-                                        <th class="p-2 border-b border-gray-200 text-sm font-medium text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $__currentLoopData = $b2cColumns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <tr>
-                                        <td class="p-2 border-b border-gray-200 text-sm"><?php echo e($column); ?></td>
-                                        <td class="p-2 border-b border-gray-200 text-sm text-center">
-                                            <form action="<?php echo e(route('admin.columns.delete')); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette colonne ?');">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('DELETE'); ?>
-                                                <input type="hidden" name="type" value="b2c">
-                                                <input type="hidden" name="column" value="<?php echo e($column); ?>">
-                                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md">
-                                                    Supprimer
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </tbody>
-                            </table>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Colonnes B2C</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full border border-gray-300 bg-gray-50 rounded-lg shadow">
+                                    <thead>
+                                        <tr class="bg-blue-500 text-white text-sm">
+                                            <th class="p-3 text-left font-medium">Nom de la Colonne</th>
+                                            <th class="p-3 text-center font-medium">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $__currentLoopData = $b2cColumns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr class="hover:bg-blue-50">
+                                            <td class="p-3 border-b text-gray-700 text-sm"><?php echo e($column); ?></td>
+                                            <td class="p-3 border-b text-center">
+                                                <form action="<?php echo e(route('admin.columns.delete')); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette colonne ?');">
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
+                                                    <input type="hidden" name="type" value="b2c">
+                                                    <input type="hidden" name="column" value="<?php echo e($column); ?>">
+                                                    <button type="submit" 
+                                                            class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md">
+                                                        Supprimer
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <!-- Ajouter une colonne -->
-                            <form action="<?php echo e(route('admin.columns.add')); ?>" method="POST" class="mt-4">
+                            <!-- Ajouter une Colonne -->
+                            <form action="<?php echo e(route('admin.columns.add')); ?>" method="POST" class="mt-6 flex items-center gap-4">
                                 <?php echo csrf_field(); ?>
                                 <input type="hidden" name="type" value="b2c">
-                                <label for="b2c_column" class="block text-sm font-medium">Ajouter une colonne</label>
-                                <div class="flex items-center mt-2">
-                                    <input 
-                                        type="text" 
-                                        id="b2c_column" 
-                                        name="column" 
-                                        class="flex-1 border rounded-l-md p-2 focus:outline-none focus:ring focus:border-blue-300" 
-                                        placeholder="Nom de la colonne">
-                                    <button 
-                                        type="submit" 
-                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r-md">
-                                        Ajouter
-                                    </button>
-                                </div>
+                                <input type="text" id="b2c_column" name="column" 
+                                       class="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-300"
+                                       placeholder="Nom de la colonne">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg">
+                                    Ajouter
+                                </button>
                             </form>
                         </div>
                     </div>

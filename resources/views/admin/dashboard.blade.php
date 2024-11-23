@@ -2,101 +2,118 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg flex">
+                <!-- Sidebar -->
                 @include('admin.layouts.sidebar')
-                <main class="flex-1 p-6">
-                    <!-- Alerts -->
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show mb-6" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
+                <!-- Main Content -->
+                <div class="py-6">
 
-                    @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show mb-6" role="alert">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                        <!-- Stats Globales -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-white p-6 rounded-lg shadow-lg">
+                                <h3 class="text-sm font-semibold text-gray-600 uppercase">Total Users</h3>
+                                <p class="text-4xl font-bold text-gray-800">{{ $totalUsers }}</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-lg">
+                                <h3 class="text-sm font-semibold text-gray-600 uppercase">New Users Today</h3>
+                                <p class="text-4xl font-bold text-gray-800">{{ $newUsersToday }}</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-lg">
+                                <h3 class="text-sm font-semibold text-gray-600 uppercase">Active Users</h3>
+                                <p class="text-4xl font-bold text-gray-800">{{ $activeUsers }}</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-lg">
+                                <h3 class="text-sm font-semibold text-gray-600 uppercase">Total Countries</h3>
+                                <p class="text-4xl font-bold text-gray-800">{{ $totalPays }}</p>
+                            </div>
                         </div>
-                    @endif
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-700">Total Users</h3>
-                            <p class="text-3xl font-bold text-gray-900">{{ \App\Models\User::count() }}</p>
+            
+                        <!-- Graphique : Distribution des B2B/B2C par pays -->
+                        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">B2B & B2C Distribution by Country</h3>
+                            <canvas id="countryChart" height="100"></canvas>
                         </div>
-
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-700">New Users Today</h3>
-                            <p class="text-3xl font-bold text-gray-900">
-                                {{ \App\Models\User::whereDate('created_at', today())->count() }}
-                            </p>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-700">Active Users</h3>
-                            <p class="text-3xl font-bold text-gray-900">
-                                {{ \App\Models\User::whereNotNull('email_verified_at')->count() }}
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Global Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-700">Total B2B</h3>
-                            <p class="text-3xl font-bold text-gray-900">{{ \App\Models\B2B::count() }}</p>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-700">Total B2C</h3>
-                            <p class="text-3xl font-bold text-gray-900">{{ \App\Models\B2C::count() }}</p>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-700">Total Pays</h3>
-                            <p class="text-3xl font-bold text-gray-900">{{ \App\Models\Pays::count() }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Country Stats -->
-                    @php
-                        $pays = \App\Models\Pays::all();
-                    @endphp
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($pays as $pay)
-                            <div class="bg-white p-6 rounded-lg shadow-sm">
-                                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $pay->name }} 
-                                    <span class="text-sm text-gray-500">(+{{ $pay->indicatif }})</span>
-                                </h3>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-blue-50 p-4 rounded-lg">
-                                        <h4 class="text-sm font-medium text-blue-800">B2B</h4>
-                                        <p class="text-2xl font-bold text-blue-600">
-                                            {{ \App\Models\B2B::where('pays_id', $pay->id)->count() }}
-                                        </p>
-                                    </div>
-                                    <div class="bg-green-50 p-4 rounded-lg">
-                                        <h4 class="text-sm font-medium text-green-800">B2C</h4>
-                                        <p class="text-2xl font-bold text-green-600">
-                                            {{ \App\Models\B2C::where('pays_id', $pay->id)->count() }}
-                                        </p>
+            
+                        <!-- Détails par Pays -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach($paysStats as $pay)
+                                <div class="bg-white p-6 rounded-lg shadow-lg">
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-2">{{ $pay['name'] }} 
+                                        <span class="text-sm text-gray-500">(+{{ $pay['indicatif'] }})</span>
+                                    </h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-blue-100 p-4 rounded-lg text-center">
+                                            <h4 class="text-sm font-medium text-blue-800">B2B</h4>
+                                            <p class="text-2xl font-bold text-blue-600">{{ $pay['b2b_count'] }}</p>
+                                        </div>
+                                        <div class="bg-green-100 p-4 rounded-lg text-center">
+                                            <h4 class="text-sm font-medium text-green-800">B2C</h4>
+                                            <p class="text-2xl font-bold text-green-600">{{ $pay['b2c_count'] }}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="mt-8">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-                        <div class="bg-white shadow-sm rounded-lg">
+                            @endforeach
                         </div>
                     </div>
-                </main>
+                </div>
+            
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    // Récupération des données pour Chart.js
+                    const countryData = @json($paysChartData);
+            
+                    const labels = countryData.map(data => data.name);
+                    const b2bCounts = countryData.map(data => data.b2b_count);
+                    const b2cCounts = countryData.map(data => data.b2c_count);
+            
+                    const ctx = document.getElementById('countryChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'B2B',
+                                    data: b2bCounts,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1,
+                                },
+                                {
+                                    label: 'B2C',
+                                    data: b2cCounts,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1,
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'B2B and B2C Counts by Country'
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                }
+                            }
+                        }
+                    });
+                </script>
             </div>
         </div>
     </div>
+
 </x-app-layout>
+
+
