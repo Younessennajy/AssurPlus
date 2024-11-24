@@ -6,6 +6,17 @@
                 @include('admin.layouts.sidebar')
                 <!-- Main Content -->
                 <div class="py-6">
+                    @if(session('success'))
+                    <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('duplicates'))
+                    <div class="mb-4 p-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg">
+                        {{ count(session('duplicates')) }} lignes sont des doublons et n'ont pas été importées.
+                    </div>
+                @endif
 
                     <div class="max-w-7xl mx-auto px-6 lg:px-8">
                         <!-- Stats Globales -->

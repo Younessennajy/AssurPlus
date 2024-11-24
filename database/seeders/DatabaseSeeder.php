@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PaysTableSeeder::class,
+            B2bSeeder::class,
         ]);
+        
+
+        
     }
 }
+// php artisan db:seed --class=B2bSeeder

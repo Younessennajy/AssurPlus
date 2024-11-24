@@ -6,9 +6,21 @@
                     @if($data->count() > 0)
                         @foreach($data->first()->getAttributes() as $column => $value)
                             @unless(in_array($column, ['id', 'pays_id', 'created_at', 'updated_at']))
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider column-header"
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider column-header cursor-pointer"
+                                    onclick="sortTable('{{ $column }}')"
                                     data-column="{{ $column }}">
-                                    {{ $column }}
+                                    <div class="flex items-center">
+                                        {{ $column }}
+                                        @if(isset($sortColumn) && $sortColumn === $column)
+                                            <span class="ml-1">
+                                                @if($sortDirection === 'asc')
+                                                    ↑
+                                                @else
+                                                    ↓
+                                                @endif
+                                            </span>
+                                        @endif
+                                    </div>
                                 </th>
                             @endunless
                         @endforeach
@@ -60,3 +72,22 @@
         </table>
     </div>
 </div>
+
+<script>
+function sortTable(column) {
+    const currentUrl = new URL(window.location.href);
+    const currentSort = currentUrl.searchParams.get('sort');
+    const currentDirection = currentUrl.searchParams.get('direction');
+    
+    let newDirection = 'asc';
+    
+    if (currentSort === column && currentDirection === 'asc') {
+        newDirection = 'desc';
+    }
+    
+    currentUrl.searchParams.set('sort', column);
+    currentUrl.searchParams.set('direction', newDirection);
+    
+    window.location.href = currentUrl.toString();
+}
+</script>

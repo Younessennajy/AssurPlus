@@ -64,57 +64,50 @@ class ImportController extends Controller
     }
 
     public function processImport(Request $request)
-    {
-        try {
-            DB::beginTransaction();
-            $pays_id = $request->input('pays_id');
-            $filename = session('original_filename');
-            $filePath = storage_path('app/' . session('temp_excel_file'));
-            
-            $data = Excel::toArray([], $filePath)[0];
-            $headers = array_shift($data);
+{
+    try {
+        // Récupération des mappings
+        $b2bMapping = $request->input('b2b_mapping', []);
+        $b2cMapping = $request->input('b2c_mapping', []);
 
-            $userName = Auth::check() ? Auth::user()->name : 'admin';
+        // Vérification des doublons
+        $allSelectedColumns = array_merge(array_values($b2bMapping), array_values($b2cMapping));
+        $duplicates = array_diff_assoc($allSelectedColumns, array_unique($allSelectedColumns));
 
-            foreach ($data as $row) {
-                $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping, $pays_id);
-            }
-            $dateImport = now()->format('Y-m-d H:i:s');
-            $pays = Pays::find($pays_id);
-            if ($request->b2b_mapping) {
-                ImportHistory::create([
-                    'table_type' => 'b2b',
-                    'pays_id' => $pays_id,
-                    'user_name' => $userName,
-                    'tag' => "Import B2B - {$pays->name} - {$dateImport}",
-                    'action' => 'import',
-                ]);
-            }
-
-            if ($request->b2c_mapping) {
-                ImportHistory::create([
-                    'table_type' => 'b2c',
-                    'pays_id' => $pays_id,
-                    'user_name' => $userName,
-                    'tag' => "Import B2C - {$pays->name} - {$dateImport}",
-                    'action' => 'import',
-                ]);
-            }
-
-            DB::commit();
-
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-            session()->forget(['temp_excel_file', 'original_filename']);
-
-            return redirect()->route('admin.dashboard')
-                ->with('success', 'Import completed successfully');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['import' => 'Import failed: ' . $e->getMessage()]);
+        if (!empty($duplicates)) {
+            return back()->with('error', 'Certaines colonnes Excel sont mappées plusieurs fois. Veuillez corriger les doublons.');
         }
+
+        // Traitement normal de l'import
+        DB::beginTransaction();
+        $pays_id = $request->input('pays_id');
+        $filename = session('original_filename');
+        $filePath = storage_path('app/' . session('temp_excel_file'));
+
+        $data = Excel::toArray([], $filePath)[0];
+        $headers = array_shift($data);
+
+        $userName = Auth::check() ? Auth::user()->name : 'admin';
+
+        foreach ($data as $row) {
+            $this->processRow($row, $b2bMapping, $b2cMapping, $pays_id);
+        }
+
+        DB::commit();
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+        session()->forget(['temp_excel_file', 'original_filename']);
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Import terminé avec succès.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['import' => 'Erreur lors de l\'importation : ' . $e->getMessage()]);
     }
+}
+
 
     public function history()
     {
@@ -136,7 +129,7 @@ class ImportController extends Controller
                 DB::table('b2b')->insert($b2bData);
             }
         }
-
+    
         if ($b2cMapping) {
             $b2cData = $this->mapRowData($row, $b2cMapping);
             if (!empty($b2cData)) {
@@ -147,6 +140,7 @@ class ImportController extends Controller
             }
         }
     }
+    
 
     protected function mapRowData($row, $mapping)
     {
@@ -171,4 +165,37 @@ class ImportController extends Controller
             $this->excludedColumns
         );
     }
+    public function checkDuplicates(Request $request)
+    {
+        $paysId = $request->input('pays_id');
+        $filePath = storage_path('app/' . session('temp_excel_file'));
+    
+        try {
+            if (!file_exists($filePath)) {
+                return back()->withErrors(['file' => 'Fichier Excel introuvable. Veuillez réimporter.']);
+            }
+    
+            $data = Excel::toArray([], $filePath)[0];
+            $headers = array_shift($data);
+    
+            $phoneColumnIndex = array_search('phone', $headers);
+            if ($phoneColumnIndex === false) {
+                return back()->with(['check_duplicates_result'=> 'La colonne "phone" est manquante.']);
+            }
+    
+            $allPhones = array_column($data, $phoneColumnIndex);
+            $duplicates = array_unique(array_diff_assoc($allPhones, array_unique($allPhones)));
+    
+            $message = empty($duplicates) 
+                ? 'Aucun doublon trouvé.' 
+                : 'Doublons trouvés : ' . implode(', ', $duplicates);
+    
+            return back()->with(['check_duplicates_result'=>$message]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la vérification : ' . $e->getMessage()]);
+        }
+    }
+    
+
+
 }

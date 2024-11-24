@@ -84,5 +84,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::post('/pays/add', [DataController::class, 'add'])->name('pays.add');
     Route::delete('/pays/delete/{id}', [DataController::class, 'delete'])->name('pays.delete');
 
+
+    Route::post('/admin/import/check-duplicates', [ImportController::class, 'checkDuplicates'])
+    ->name('import.check_duplicates');
+
+
 });
 
