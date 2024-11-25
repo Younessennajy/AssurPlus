@@ -15,7 +15,7 @@ class AdminProfileController extends Controller
     public function edit()
     {
         $admin = auth('admin')->user(); // Récupérer l'admin connecté
-        return view('admin.profile.profile', compact('admin'));
+        return view('livewire.admin.profile.profile', compact('admin'));
     }
 
     /**

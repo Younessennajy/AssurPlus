@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('admin.layouts.sidebar', function ($view) {
+        View::composer('livewire.admin.layouts.sidebar', function ($view) {
             $view->with('pays', \App\Models\Pays::all());
         });
 

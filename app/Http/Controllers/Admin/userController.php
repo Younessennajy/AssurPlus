@@ -11,11 +11,11 @@ class UserController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(10);
-        return view('admin.users.index', compact('users'));
+        return view('livewire.admin.users.index', compact('users'));
     }
     public function create()
     {
-        return view('admin.users.create');
+        return view('livewire.admin.users.create');
     }
 
     public function store(Request $request)
@@ -54,7 +54,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('admin.users.edit', compact('user'));
+        return view('livewire.admin.users.edit', compact('user'));
     }
 
     // Méthode pour mettre à jour les informations de l'utilisateur
@@ -83,7 +83,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);  
         $user->delete();
-
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
     }
 

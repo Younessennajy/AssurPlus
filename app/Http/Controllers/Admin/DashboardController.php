@@ -41,7 +41,7 @@ class DashboardController extends Controller
         });
 
         // Retourner les données à la vue
-        return view('admin.dashboard', compact(
+        return view('livewire.admin.dashboard', compact(
             'totalUsers',
             'newUsersToday',
             'activeUsers',

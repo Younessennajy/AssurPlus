@@ -8,10 +8,11 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DataController;
 use App\Http\Controllers\Admin\ExportsController;
-use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ColumnsController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\ImportController;
+
 
 Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -53,14 +54,14 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/pays/{pays}/b2b', [DataController::class, 'showB2BData'])->name('pays.b2b');
         Route::get('pays/{pays}/b2c', [DataController::class, 'showB2CData'])->name('pays.b2c');
 
-        Route::get('/import', [ImportController::class, 'showMappingForm'])->name('import.show');
-        Route::match(['get', 'post'], 'admin/import/read-headers/{pays}/{type}', [ImportController::class, 'readExcelHeaders'])
-        ->name('import.readHeaders');
-        Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
-        Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
+            Route::get('/import', [ImportController::class, 'showMappingForm'])->name('import.show');
+            Route::match(['get', 'post'], 'admin/import/read-headers/{pays}/{type}', [ImportController::class, 'readExcelHeaders'])
+            ->name('import.readHeaders');
+            Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
+            Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
 
-        Route::post('/admin/import/confirm', [ImportController::class, 'confirmImport'])->name('admin.import.confirm');
-        Route::get('/admin/import/cancel', [ImportController::class, 'cancelImport'])->name('admin.import.cancel');
+            Route::post('/admin/import/confirm', [ImportController::class, 'confirmImport'])->name('admin.import.confirm');
+            Route::get('/admin/import/cancel', [ImportController::class, 'cancelImport'])->name('admin.import.cancel');
 
 
 /* edit b2b */
@@ -85,9 +86,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::delete('/pays/delete/{id}', [DataController::class, 'delete'])->name('pays.delete');
 
 
-    Route::post('/admin/import/check-duplicates', [ImportController::class, 'checkDuplicates'])
-    ->name('import.check_duplicates');
-
-
+    Route::post('/admin/check-duplicates', [ImportController::class, 'checkDuplicates'])
+    ->name('check-duplicates');
+    
 });
 
+// Route::get('/admin/import/{pays}/{type}', \App\Http\Livewire\Admin\ImportData::class)
+// ->name('admin.import');

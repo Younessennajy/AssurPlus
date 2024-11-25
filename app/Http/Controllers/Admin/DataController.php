@@ -12,7 +12,7 @@ class DataController extends Controller
     public function pays()
     {
         $pays = Pays::all();
-        return view('admin.layouts.sidebar', compact('pays'));
+        return view('livewire.admin.layouts.sidebar', compact('pays'));
     }
     public function showB2BData(Request $request, $pays) 
 {
@@ -41,7 +41,7 @@ class DataController extends Controller
         $message = "Aucun résultat trouvé pour votre recherche.";
     }
 
-    return view('admin.data.b2b', [
+    return view('livewire.admin.data.b2b', [
         'data' => $data,
         'pays' => $pays,
         'type' => 'b2b',
@@ -77,7 +77,7 @@ public function showB2CData(Request $request, $pays)
         $message = "Aucun résultat trouvé pour votre recherche.";
     }
 
-    return view('admin.data.b2c', [
+    return view('livewire.admin.data.b2c', [
         'data' => $data,
         'pays' => $pays,
         'type' => 'b2c',
@@ -110,7 +110,7 @@ public function showEditForm(Request $request, $pays, $type, $id)
         $data = B2C::findOrFail($id);
     }
     
-    return view("admin.data.edit-{$type}", compact('pays', 'type', 'data'));
+    return view("livewire.admin.data.edit-{$type}", compact('pays', 'type', 'data'));
 }
 
 public function updateData(Request $request, $pays, $type, $id)
