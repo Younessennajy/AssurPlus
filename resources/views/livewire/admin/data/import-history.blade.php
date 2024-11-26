@@ -1,51 +1,80 @@
 <x-app-layout>
     <div class="py-12 bg-gray-100 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6">
             <div class="bg-white shadow-lg rounded-lg flex overflow-hidden">
                 <!-- Sidebar -->
                 @include('livewire.admin.layouts.sidebar')
-                <main class="p-8 w-full">
+                <main class="p-4 w-full">
                     <!-- Page Title -->
                     <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md p-6 mb-8">
                         <h2 class="text-3xl font-bold mb-2">Historique des imports</h2>
                         <p class="text-sm opacity-80">Consultez les enregistrements des imports effectués dans le système.</p>
                     </div>
 
-                    <!-- Table -->
+                    <!-- Session Message -->
+                    @if(session('success'))
+                        <div class="mb-4 bg-green-100 text-green-800 p-4 rounded-lg">
+                            <strong>{{ session('success') }}</strong>
+                        </div>
+                    @endif
+
+                    <!-- Import History Table -->
                     <div class="bg-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-6">
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-auto w-full ">
                                 <table class="min-w-full table-auto border-collapse border border-gray-200">
                                     <thead class="bg-gray-100">
                                         <tr>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
+                                            {{-- <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Fichier</th> --}}
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Type</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Ignorées</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Utilisateur</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white">
-                                        @foreach($history as $record)
+                                        @forelse($history as $record)
                                             <tr class="hover:bg-gray-50 transition-colors">
                                                 <td class="px-6 py-4 border-b">{{ $record->created_at->format('d/m/Y H:i') }}</td>
-                                                <td class="px-6 py-4 border-b text-blue-500 font-semibold">{{ strtoupper($record->table_type) }}</td>
-                                                <td class="px-6 py-4 border-b">{{ $record->pays->name ?? 'N/A' }}</td>
-                                                <td class="px-6 py-4 border-b">
-                                                    <span class="px-2 py-1 text-sm rounded-full bg-green-100 text-green-600">
-                                                        {{ $record->tag }}
-                                                    </span>
+                                                {{-- <td class="px-6 py-4 border-b">
+                                                    <span class="text-sm font-semibold text-blue-500">{{ $record->filename ?? 'Non spécifié' }}</span>
+                                                </td> --}}
+                                                <td class="px-6 py-4 border-b text-blue-500 font-semibold">
+                                                    {{ strtoupper($record->table_type ?? 'Inconnu') }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b">{{ $record->user_name }}</td>
                                                 <td class="px-6 py-4 border-b">
-                                                    <button class="px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition">
-                                                        {{ $record->action }}
-                                                    </button>
+                                                    {{ $record->pays->name ?? 'N/A' }}
+                                                </td>
+                                                <td class="px-6 py-4 border-b text-gray-700">
+                                                    {{ $record->total_records ?? 0 }}
+                                                </td>
+                                                <td class="px-6 py-4 border-b text-green-600">
+                                                    {{ $record->imported_records ?? 0 }}
+                                                </td>
+                                                <td class="px-6 py-4 border-b text-red-600">
+                                                    {{ $record->skipped_records ?? 0 }}
+                                                </td>
+                                                <td class="px-6 py-4 border-b">
+                                                    {{ $record->user_name ?? 'Utilisateur inconnu' }}
+                                                </td>
+                                                <td class="px-6 py-4 border-b">
+                                                    {{ $record->action ?? 'Utilisateur inconnu' }}
+
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="9" class="px-6 py-4 text-center text-gray-500">
+                                                    Aucun enregistrement trouvé.
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
+                                    
                                 </table>
                             </div>
                         </div>

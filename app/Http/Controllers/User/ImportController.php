@@ -12,14 +12,13 @@ use App\Models\ImportHistory;
 use App\Models\Pays;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\ProcessImportJob;
 
 class ImportController extends Controller
 {
     protected $excludedColumns = ['id', 'created_at', 'updated_at', 'pays_id'];
-    protected $requiredFields = ['tel']; 
-    protected $optionalFields = ['gsm', 'address']; 
-    protected $insertedCount = 0;   
-    protected $columnCount = 0;
+    protected $requiredFields = ['phone'];
+    protected $optionalFields = ['gsm', 'address'];
 
     public function showMappingForm(Request $request)
     {
@@ -27,16 +26,15 @@ class ImportController extends Controller
         $b2bColumns = $this->getTableColumns('b2b');
         $b2cColumns = $this->getTableColumns('b2c');
         $excelHeaders = [];
-        
         return view('user.data.show', compact('b2bColumns', 'b2cColumns', 'excelHeaders'));
     }
 
     public function readExcelHeaders(Request $request, $pays, $type)
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|mimes:xlsx,csv|max:10240', 
+            'file' => 'required|file|mimes:xlsx,csv|max:10240',
         ]);
-    
+
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
@@ -45,11 +43,11 @@ class ImportController extends Controller
             $file = $request->file('file');
             $excel = Excel::toArray([], $file);
             $excelHeaders = $excel[0][0] ?? [];
-    
+
             $path = $file->store('temp');
             session(['temp_excel_file' => $path]);
             session(['original_filename' => $file->getClientOriginalName()]);
-            
+
             $columns = $this->getTableColumns($type);
             $pays = Pays::where('name', $pays)->first();
 
@@ -67,85 +65,120 @@ class ImportController extends Controller
     }
 
     public function processImport(Request $request)
-    {
-        try {
-            DB::beginTransaction();
+{
+    try {
+        $b2bMapping = $request->input('b2b_mapping', []);
+        $b2cMapping = $request->input('b2c_mapping', []);
+        $pays_id = $request->input('pays_id');
+        $filename = session('original_filename');
+        $filePath = storage_path('app/' . session('temp_excel_file'));
 
-            $pays_id = $request->input('pays_id');
-            $filename = session('original_filename');
-            $filePath = storage_path('app/' . session('temp_excel_file'));
-            
-            $data = Excel::toArray([], $filePath)[0];
-            $headers = array_shift($data);
+        $data = Excel::toArray([], $filePath)[0];
+        array_shift($data);
 
-            $userName = Auth::check() ? Auth::user()->name : 'user';
+        // Déterminer le type basé sur les mappings
+        $type = !empty($b2bMapping) ? 'b2b' : (!empty($b2cMapping) ? 'b2c' :null);
 
-            $this->insertedCount = 0;
+        // Créer une entrée dans l'historique
+        $importHistory = ImportHistory::create([
+            'pays_id' => $pays_id,
+            'user_name' => Auth::user()->name,
+            'tag' => $filename,
+            'table_type' => $type,
+            'action' => 'importer',
+            'filename' => $filename,
+            'total_records' => count($data),
+            'imported_records' => 0,
+            'skipped_records' => 0, 
+        ]);
 
-            foreach ($data as $row) {
-                $this->processRow($row, $request->b2b_mapping, $request->b2c_mapping, $pays_id);
-            }
-            $dateImport = now()->format('Y-m-d H:i:s');
-            $pays = Pays::find($pays_id);
-            if ($request->b2b_mapping) {
-                ImportHistory::create([
-                    'table_type' => 'b2b',
-                    'pays_id' => $pays_id,
-                    'user_name' => $userName,
-                    'tag' => "Import B2B - {$pays->name} - {$dateImport}",
-                    'action' => 'import',
-                ]);
-            }
+        ProcessImportJob::dispatch(
+            $data,
+            $b2bMapping,
+            $b2cMapping,
+            $pays_id,
+            Auth::id(),
+            $filename,
+            $importHistory->id
+        );
 
-            // Enregistrer l'historique pour B2C
-            if ($request->b2c_mapping) {
-                ImportHistory::create([
-                    'table_type' => 'b2c',
-                    'pays_id' => $pays_id,
-                    'user_name' => $userName,
-                    'tag' => "Import B2B - {$pays->name} - {$dateImport}",
-                    'action' => 'import',
-                ]);
-            }
-
-            DB::commit();
-            
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-            session()->forget(['temp_excel_file', 'original_filename']);
-
-            return redirect()->route('dashboard')
-                ->with('success', 'Import completed successfully');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['import' => 'Import failed: ' . $e->getMessage()]);
+        if (file_exists($filePath)) {
+            unlink($filePath);
         }
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Import lancé avec succès. Vous pouvez suivre la progression dans l\'historique des imports.');
+    } catch (\Exception $e) {
+        return back()->withErrors(['import' => 'Erreur lors de l\'importation : ' . $e->getMessage()]);
+    }
+}
+
+    
+    public function history()
+    {
+        $history = ImportHistory::with('pays')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('livewire.admin.data.import-history', compact('history'));
     }
 
-    protected function processRow($row, $b2bMapping, $b2cMapping, $pays_id)
+    protected function processRow($data, $b2bMapping, $b2cMapping, $pays_id, $historyId)
     {
-        if ($b2bMapping) {
-            $b2bData = $this->mapRowData($row, $b2bMapping);
-            if (!empty($b2bData)) {
-                $b2bData['pays_id'] = $pays_id;
-                $b2bData['created_at'] = now();
-                $b2bData['updated_at'] = now();
-                DB::table('b2b')->insert($b2bData);
+        $existingPhonesB2B = DB::table('b2b')
+            ->where('pays_id', $pays_id)
+            ->pluck('phone')
+            ->toArray();
+    
+        $existingPhonesB2C = DB::table('b2c')
+            ->where('pays_id', $pays_id)
+            ->pluck('phone')
+            ->toArray();
+    
+        $newB2BData = [];
+        $newB2CData = [];
+        $importedCount = 0;
+        $skippedCount = 0;
+    
+        foreach ($data as $row) {
+            if (!empty($b2bMapping)) {
+                $b2bData = $this->mapRowData($row, $b2bMapping);
+                if (!empty($b2bData['phone']) && !in_array($b2bData['phone'], $existingPhonesB2B)) {
+                    $b2bData['pays_id'] = $pays_id;
+                    $b2bData['created_at'] = now();
+                    $b2bData['updated_at'] = now();
+                    $newB2BData[] = $b2bData;
+                    $existingPhonesB2B[] = $b2bData['phone'];
+                    $importedCount++;
+                } else {
+                    $skippedCount++;
+                }
+            }
+    
+            // Traitement pour B2C
+            if (!empty($b2cMapping)) {
+                $b2cData = $this->mapRowData($row, $b2cMapping);
+                if (!empty($b2cData['phone']) && !in_array($b2cData['phone'], $existingPhonesB2C)) {
+                    $b2cData['pays_id'] = $pays_id;
+                    $b2cData['created_at'] = now();
+                    $b2cData['updated_at'] = now();
+                    $newB2CData[] = $b2cData;
+                    $existingPhonesB2C[] = $b2cData['phone'];
+                    $importedCount++;
+                } else {
+                    $skippedCount++;
+                }
             }
         }
-
-        if ($b2cMapping) {
-            $b2cData = $this->mapRowData($row, $b2cMapping);
-            if (!empty($b2cData)) {
-                $b2cData['pays_id'] = $pays_id;
-                $b2cData['created_at'] = now();
-                $b2cData['updated_at'] = now();
-                DB::table('b2c')->insert($b2cData);
-            }
+    
+        if (!empty($newB2BData)) {
+            DB::table('b2b')->insert($newB2BData);
         }
+        if (!empty($newB2CData)) {
+            DB::table('b2c')->insert($newB2CData);
+        }
+    
     }
-
     protected function mapRowData($row, $mapping)
     {
         $data = [];
@@ -169,13 +202,5 @@ class ImportController extends Controller
             $this->excludedColumns
         );
     }
-
-    public function history()
-    {
-        $history = ImportHistory::with('pays')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return view('user.data.import-history', compact('history'));
-    }
+    
 }

@@ -82,22 +82,8 @@
                                     </button>
                                 </div>
 
-
-                                <?php if(session('check_duplicates_result')): ?>
-    <div class="alert alert-info">
-        <?php echo e(session('check_duplicates_result')); ?>
-
-    </div>
-<?php endif; ?>
-
-<?php if($errors->any()): ?>
-    <div class="alert alert-danger">
-        <?php echo e(implode(', ', $errors->all())); ?>
-
-    </div>
-<?php endif; ?>
-
-                            </div>
+                                                
+                        </div>
                         </form>
                     <?php endif; ?>
                 </main>
@@ -113,4 +99,5 @@
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?><?php /**PATH C:\xampp\htdocs\gestion_contrat\resources\views/livewire/admin/data/show.blade.php ENDPATH**/ ?>
+<?php endif; ?>
+<?php /**PATH C:\xampp\htdocs\gestion_contrat\resources\views/livewire/admin/data/show.blade.php ENDPATH**/ ?>

@@ -86,10 +86,8 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::delete('/pays/delete/{id}', [DataController::class, 'delete'])->name('pays.delete');
 
 
-    Route::post('/admin/check-duplicates', [ImportController::class, 'checkDuplicates'])
-    ->name('check-duplicates');
+    Route::post('/admin/check-duplicates', [App\Http\Controllers\Admin\ImportController::class, 'checkDuplicates'])
+    ->name('import.duplicates');
+
     
 });
-
-// Route::get('/admin/import/{pays}/{type}', \App\Http\Livewire\Admin\ImportData::class)
-// ->name('admin.import');

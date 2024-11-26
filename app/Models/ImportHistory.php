@@ -14,7 +14,12 @@ class ImportHistory extends Model
         'user_name',
         'tag',
         'action',
+        'filename',
+        'total_records',
+        'imported_records',
+        'skipped_records'
     ];
+
 
     public function pays()
     {

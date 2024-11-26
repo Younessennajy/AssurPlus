@@ -68,24 +68,9 @@
                                         Importer les données
                                     </button>
                                 </div>
-{{--                                 
-                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                                    Importer les données
-                                </button> --}}
 
-                                @if(session('check_duplicates_result'))
-    <div class="alert alert-info">
-        {{ session('check_duplicates_result') }}
-    </div>
-@endif
-
-@if($errors->any())
-    <div class="alert alert-danger">
-        {{ implode(', ', $errors->all()) }}
-    </div>
-@endif
-
-                            </div>
+                                                
+                        </div>
                         </form>
                     @endif
                 </main>
