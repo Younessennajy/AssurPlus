@@ -75,7 +75,7 @@ class ImportController extends Controller
 
         $data = Excel::toArray([], $filePath)[0];
         $headers = array_shift($data);
-
+        $type = !empty($b2bMapping) ? 'b2b' : 'b2c';
         $skippedCount = 0;
         $importedCount = 0;
 
@@ -89,8 +89,8 @@ class ImportController extends Controller
             $skippedCount += $b2bResult['skipped'] + $b2cResult['skipped'];
             $importedCount += $b2bResult['imported'] + $b2cResult['imported'];
         }
+        $action = 'import';
 
-        // Stocker l'historique de l'import
         ImportHistory::create([
             'pays_id' => $pays_id,
             'user_id' => Auth::id(),
@@ -98,7 +98,7 @@ class ImportController extends Controller
             'total_records' => count($data),
             'imported_records' => $importedCount,
             'skipped_records' => $skippedCount,
-            'status' => 'completed',
+            'tag' => $this->generateTag($type, $pays_id),
         ]);
 
         DB::commit();
@@ -139,6 +139,12 @@ class ImportController extends Controller
 
     //     return view('dashboard', compact('history'));
     // }
+    protected function generateTag($tableType, $pays_id)
+    {
+        $pays = DB::table('pays')->where('id', $pays_id)->value('name');
+        $date = now()->format('Y-m-d');
+        return "{$tableType}_{$pays}_{$date}";
+    }
 
     protected function processRow($row, $mapping, $table, $pays_id)
 {
@@ -198,4 +204,6 @@ class ImportController extends Controller
             $this->excludedColumns
         );
     }
+
+    
 }

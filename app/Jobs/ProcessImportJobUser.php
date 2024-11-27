@@ -21,8 +21,9 @@ class ProcessImportJobUser implements ShouldQueue
     protected $pays_id;
     protected $userId;
     protected $filename;
-
-    public function __construct($data, $b2bMapping, $b2cMapping, $pays_id, $userId, $filename)
+    protected $action;
+    protected $type;
+    public function __construct($data, $b2bMapping, $b2cMapping, $pays_id, $userId, $filename, $action, $type)
     {
         $this->data = $data;
         $this->b2bMapping = $b2bMapping;
@@ -30,7 +31,10 @@ class ProcessImportJobUser implements ShouldQueue
         $this->pays_id = $pays_id;
         $this->userId = $userId;
         $this->filename = $filename;
+        $this->action = $action; // Initialiser action
+        $this->type = $type;     // Initialiser type
     }
+    
 
     public function handle()
     {
@@ -102,15 +106,16 @@ class ProcessImportJobUser implements ShouldQueue
             }
 
             // Créer l'historique
-            ImportHistory::create([
-                'pays_id' => $this->pays_id,
-                'user_id' => $this->userId,
-                'filename' => $this->filename,
-                'total_records' => count($this->data),
-                'imported_records' => count($newB2BData) + count($newB2CData),
-                'skipped_records' => $skippedCount,
-                'status' => 'completed'
-            ]);
+            // ImportHistory::create([
+            //     'pays_id' => $this->pays_id,
+            //     'user_id' => $this->userId,
+            //     'filename' => $this->filename,
+            //     'total_records' => count($this->data),
+            //     'imported_records' => count($newB2BData) + count($newB2CData),
+            //     'skipped_records' => $skippedCount,
+            //     'tag' => $this->generateTag($this->type, $this->pays_id),
+            // ]);
+            
 
             DB::commit();
         } catch (\Exception $e) {
@@ -141,4 +146,17 @@ class ProcessImportJobUser implements ShouldQueue
 
         return $data;
     }
+
+
+    protected function generateTag($tableType, $pays_id)
+    {
+        $pays = DB::table('pays')->where('id', $pays_id)->value('name');
+        if (empty($pays)) {
+            throw new \Exception("Pays introuvable pour l'ID: {$pays_id}");
+        }
+    
+        $date = now()->format('Y-m-d');
+        return "{$tableType}_{$pays}_{$date}";
+    }
+    
 }
