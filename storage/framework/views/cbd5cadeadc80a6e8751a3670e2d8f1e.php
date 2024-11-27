@@ -13,18 +13,17 @@
             <div class="bg-white shadow-sm sm:rounded-lg flex">
                 <!-- Sidebar -->
                 <?php echo $__env->make('layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-                <!-- Main Content -->
 
                 <?php if(session('import_stats')): ?>
-    <div class="mt-4 bg-green-100 text-green-800 p-4 rounded-lg">
-        <h4 class="font-semibold">Résultats de l'importation :</h4>
-        <ul class="list-disc list-inside">
-            <li>Total de lignes traitées : <?php echo e(session('import_stats')['total']); ?></li>
-            <li>Lignes importées avec succès : <?php echo e(session('import_stats')['inserted']); ?></li>
-            <li>Lignes ignorées (doublons) : <?php echo e(session('import_stats')['skipped']); ?></li>
-        </ul>
-    </div>
-<?php endif; ?>
+                    <div class="mt-4 bg-green-100 text-green-800 p-4 rounded-lg">
+                        <h4 class="font-semibold">Résultats de l'importation :</h4>
+                        <ul class="list-disc list-inside">
+                            <li>Total de lignes traitées : <?php echo e(session('import_stats')['total']); ?></li>
+                            <li>Lignes importées avec succès : <?php echo e(session('import_stats')['inserted']); ?></li>
+                            <li>Lignes ignorées (doublons) : <?php echo e(session('import_stats')['skipped']); ?></li>
+                        </ul>
+                    </div>
+                <?php endif; ?>
                 <div class="py-6 w-full">
                     <div class="max-w-full mx-auto px-4 md:px-6 lg:px-8">
                         <!-- Graphique : Distribution des B2B/B2C par pays -->

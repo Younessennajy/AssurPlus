@@ -43,6 +43,9 @@
                         <?php echo $__env->make('user.data.b2b.b2b_import', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 
+                        
+                        <?php echo $__env->make('user.data.b2b.filtrage', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
                             <!-- search -->
                         <?php echo $__env->make('user.data.b2b.recherch', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                             
@@ -62,6 +65,7 @@
         </div>
     </div>
 
+   
     <style>
         .overflow-x-auto {
             -webkit-overflow-scrolling: touch;
@@ -80,7 +84,64 @@
                 padding-right: 1rem;
             }
         }
+
+        .column-header.hidden,
+        .column-data.hidden {
+            display: none;
+        }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('.column-toggle');
+            const toggleAllButton = document.getElementById('toggleAll');
+            let allChecked = true;
+
+            function updateColumnVisibility(columnName, isVisible) {
+                const headers = document.querySelectorAll(`.column-header[data-column="${columnName}"]`);
+                const cells = document.querySelectorAll(`.column-data[data-column="${columnName}"]`);
+                
+                headers.forEach(header => {
+                    if (isVisible) {
+                        header.classList.remove('hidden');
+                    } else {
+                        header.classList.add('hidden');
+                    }
+                });
+
+                cells.forEach(cell => {
+                    if (isVisible) {
+                        cell.classList.remove('hidden');
+                    } else {
+                        cell.classList.add('hidden');
+                    }
+                });
+            }
+
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const column = this.dataset.column;
+                    updateColumnVisibility(column, this.checked);
+                });
+            });
+
+            toggleAllButton.addEventListener('click', function() {
+                allChecked = !allChecked;
+                toggles.forEach(toggle => {
+                    toggle.checked = allChecked;
+                    updateColumnVisibility(toggle.dataset.column, allChecked);
+                });
+            });
+
+            const resetButton = document.querySelector('button[type="reset"]');
+            if (resetButton) {
+                resetButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = window.location.pathname;
+                });
+            }
+        });
+    </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
