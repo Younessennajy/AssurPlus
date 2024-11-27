@@ -1,4 +1,4 @@
-<x-app-layout>
+{{-- <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg flex">
@@ -10,7 +10,7 @@
                                 class="relative group border rounded-lg p-4 bg-white shadow hover:shadow-lg transition-all cursor-pointer"
                                 onclick="toggleOptions('{{ $country->id }}')">
                                 
-                                <img 
+                                <img    
                                     src="{{ asset('images/countries/' . strtolower($country->name) . '.png') }}" 
                                     alt="{{ $country->name }}" 
                                     class="w-16 h-16 mx-auto mb-4">
@@ -53,4 +53,4 @@
         }
     }
 
-</script>
+</script> --}}

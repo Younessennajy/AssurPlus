@@ -53,7 +53,7 @@
                                                     <tr>
                                                         <td class="px-6 py-4 whitespace-nowrap">
                                                             {{ $column }}
-                                                            @if($column === 'tel')
+                                                            @if($column === 'phone')
                                                                 <span class="text-red-500">*</span>
                                                             @endif
                                                         </td>

@@ -51,7 +51,7 @@ class ProcessImportJobUser implements ShouldQueue
             $newB2BData = [];
             $newB2CData = [];
             $skippedCount = 0;
-            $batchSize = 1000; // Traiter par lots de 1000
+            $batchSize = 1000; 
 
             foreach ($this->data as $index => $row) {
                 if (!empty($this->b2bMapping)) {
@@ -64,7 +64,6 @@ class ProcessImportJobUser implements ShouldQueue
                         $newB2BData[] = $b2bData;
                         $existingPhonesB2B[] = $b2bData['phone'];
 
-                        // Insérer par lots
                         if (count($newB2BData) >= $batchSize) {
                             DB::table('b2b')->insert($newB2BData);
                             $newB2BData = [];
@@ -95,7 +94,6 @@ class ProcessImportJobUser implements ShouldQueue
                 }
             }
 
-            // Insérer les données restantes
             if (!empty($newB2BData)) {
                 DB::table('b2b')->insert($newB2BData);
             }

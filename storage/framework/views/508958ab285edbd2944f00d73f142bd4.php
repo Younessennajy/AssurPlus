@@ -66,7 +66,7 @@
                                                         <td class="px-6 py-4 whitespace-nowrap">
                                                             <?php echo e($column); ?>
 
-                                                            <?php if($column === 'tel'): ?>
+                                                            <?php if($column === 'phone'): ?>
                                                                 <span class="text-red-500">*</span>
                                                             <?php endif; ?>
                                                         </td>

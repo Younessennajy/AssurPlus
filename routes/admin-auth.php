@@ -50,21 +50,21 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
         Route::get('/data/pays', [DataController::class, 'pays'])->name('data.pays');
-
+    
         Route::get('/pays/{pays}/b2b', [DataController::class, 'showB2BData'])->name('pays.b2b');
         Route::get('pays/{pays}/b2c', [DataController::class, 'showB2CData'])->name('pays.b2c');
 
-            Route::get('/import', [ImportController::class, 'showMappingForm'])->name('import.show');
-            Route::match(['get', 'post'], 'admin/import/read-headers/{pays}/{type}', [ImportController::class, 'readExcelHeaders'])
-            ->name('import.readHeaders');
-            Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
-            Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
+        Route::get('/import', [ImportController::class, 'showMappingForm'])->name('import.show');
+        Route::match(['get', 'post'], 'admin/import/read-headers/{pays}/{type}', [ImportController::class, 'readExcelHeaders'])
+        ->name('import.readHeaders');
+        Route::post('/import/process', [ImportController::class, 'processImport'])->name('import.process');
+        Route::get('/import/columns/{type}', [ImportController::class, 'getColumnsByType'])->name('import.columns');
 
-            Route::post('/admin/import/confirm', [ImportController::class, 'confirmImport'])->name('admin.import.confirm');
-            Route::get('/admin/import/cancel', [ImportController::class, 'cancelImport'])->name('admin.import.cancel');
+        Route::post('/admin/import/confirm', [ImportController::class, 'confirmImport'])->name('admin.import.confirm');
+        Route::get('/admin/import/cancel', [ImportController::class, 'cancelImport'])->name('admin.import.cancel');
 
 
-/* edit b2b */
+    /* edit b2b */
     Route::delete('/data/{pays}/{type}/{id}/delete', [DataController::class, 'deleteData'])->name('data.delete');
     Route::get('/data/{pays}/{type}/{id}/edit', [DataController::class, 'showEditForm'])->name('data.edit');
     Route::post('/data/{pays}/{type}/{id}/update', [DataController::class, 'updateData'])->name('data.update');
@@ -86,8 +86,8 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::delete('/pays/delete/{id}', [DataController::class, 'delete'])->name('pays.delete');
 
 
-    Route::post('/admin/check-duplicates', [App\Http\Controllers\Admin\ImportController::class, 'checkDuplicates'])
-    ->name('import.duplicates');
+        // Route::post('/admin/check-duplicates', [App\Http\Controllers\Admin\ImportController::class, 'checkDuplicates'])
+        // ->name('import.duplicates');
 
     
 });

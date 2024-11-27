@@ -1,6 +1,6 @@
 
 <?php if(auth()->user()->can_import): ?>
-<form action="<?php echo e(route('import.readHeaders', ['pays' => $pays->name, 'type' => 'b2b'])); ?>" 
+<form action="<?php echo e(route('import.readHeaders', ['pays' => $pays->name, 'type' => 'b2c'])); ?>" 
     method="POST"
     enctype="multipart/form-data"
     class="bg-gray-50 p-6 rounded-lg border mt-6 shadow-sm">
