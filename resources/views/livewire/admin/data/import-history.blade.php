@@ -27,7 +27,7 @@
                                         <tr>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
                                             {{-- <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Fichier</th> --}}
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Type</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
@@ -44,7 +44,7 @@
                                                     <span class="text-sm font-semibold text-blue-500">{{ $record->filename ?? 'Non spécifié' }}</span>
                                                 </td> --}}
                                                 <td class="px-6 py-4 border-b text-blue-500 font-semibold">
-                                                    {{ strtoupper($record->table_type ?? 'Inconnu') }}
+                                                    {{ strtoupper($record->tag ?? 'Inconnu') }}
                                                 </td>
                                                 <td class="px-6 py-4 border-b">
                                                     {{ $record->pays->name ?? 'N/A' }}

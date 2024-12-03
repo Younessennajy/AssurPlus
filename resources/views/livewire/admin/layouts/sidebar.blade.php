@@ -26,9 +26,7 @@
                 @foreach($pays as $country)
                 <div class="py-2 px-4 hover:bg-gray-50">
                     <div class="flex items-center space-x-2 mb-2 cursor-pointer" onclick="toggleCountryOptions('{{ $country->name }}')">
-                        <img src="{{ asset('images/countries/' . strtolower($country->name) . '.png') }}" 
-                             alt="{{ $country->name }}" 
-                             class="w-6 h-6">
+                       {{ $country->name}}
                     </div>
                     <div id="options-{{ $country->name }}" class="hidden space-x-2 ml-8">
                         <a href="{{ route('admin.pays.b2b', ['pays' => $country->name]) }}"

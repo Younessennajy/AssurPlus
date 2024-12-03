@@ -103,7 +103,6 @@ class ProcessImportJob implements ShouldQueue
                 DB::table('b2c')->insert($newB2CData);
             }
 
-            // Créer l'historique
             ImportHistory::create([
                 'pays_id' => $this->pays_id,
                 'user_id' => $this->userId,

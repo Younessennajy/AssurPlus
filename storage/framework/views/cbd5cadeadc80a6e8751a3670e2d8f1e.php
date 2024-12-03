@@ -33,7 +33,6 @@
                             </h3>
                             <canvas id="countryChart" height="100"></canvas>
                         </div>
-            
                         <!-- Détails par Pays -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             <?php $__currentLoopData = $paysStats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pay): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

@@ -36,7 +36,7 @@
                                         <tr>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
                                             
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Type</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
                                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
@@ -51,7 +51,7 @@
                                                 <td class="px-6 py-4 border-b"><?php echo e($record->created_at->format('d/m/Y H:i')); ?></td>
                                                 
                                                 <td class="px-6 py-4 border-b text-blue-500 font-semibold">
-                                                    <?php echo e(strtoupper($record->table_type ?? 'Inconnu')); ?>
+                                                    <?php echo e(strtoupper($record->tag ?? 'Inconnu')); ?>
 
                                                 </td>
                                                 <td class="px-6 py-4 border-b">

@@ -77,7 +77,6 @@ class ProcessImportJobUser implements ShouldQueue
                     }
                 }
 
-                // Même logique pour B2C
                 if (!empty($this->b2cMapping)) {
                     $b2cData = $this->mapRowData($row, $this->b2cMapping);
                     
@@ -105,29 +104,12 @@ class ProcessImportJobUser implements ShouldQueue
                 DB::table('b2c')->insert($newB2CData);
             }
 
-            // Créer l'historique
-            // ImportHistory::create([
-            //     'pays_id' => $this->pays_id,
-            //     'user_id' => $this->userId,
-            //     'filename' => $this->filename,
-            //     'total_records' => count($this->data),
-            //     'imported_records' => count($newB2BData) + count($newB2CData),
-            //     'skipped_records' => $skippedCount,
-            //     'tag' => $this->generateTag($this->type, $this->pays_id),
-            // ]);
-            
+                      
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            // Créer une entrée d'historique avec status error
-            // ImportHistory::create([
-            //     'pays_id' => $this->pays_id,
-            //     'user_id' => $this->userId,
-            //     'filename' => $this->filename,
-            //     'status' => 'failed',
-            //     'error_message' => $e->getMessage()
-            // ]);
+         
         }
     }
 

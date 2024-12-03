@@ -64,6 +64,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/admin/import/cancel', [ImportController::class, 'cancelImport'])->name('admin.import.cancel');
 
 
+        // Route::prefix('admin')->group(function () {
+        //     Route::get('/import/mapping', [ImportController::class, 'showMappingForm'])->name('admin.import.mapping');
+        //     Route::post('/import/read-headers', [ImportController::class, 'readExcelHeaders'])->name('admin.import.readHeaders');
+        //     Route::get('/import/columns', [ImportController::class, 'getTableColumns'])->name('admin.import.columns');
+        //     Route::post('/import/process', [ImportController::class, 'processImport'])->name('admin.import.process');
+        //     Route::get('/import/history', [ImportController::class, 'showImportHistory'])->name('admin.import.history');
+        // });
+
+
     /* edit b2b */
     Route::delete('/data/{pays}/{type}/{id}/delete', [DataController::class, 'deleteData'])->name('data.delete');
     Route::get('/data/{pays}/{type}/{id}/edit', [DataController::class, 'showEditForm'])->name('data.edit');
@@ -74,7 +83,8 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     ->name('export');
 
 
-    Route::get('/import-history', [ImportController::class, 'history'])->name('import.history');
+    Route::get('/import/history', [ImportController::class, 'history'])
+     ->name('import.history');
 
 
     Route::get('/columns/show', [ColumnsController::class, 'showColumns'])->name('columns.show');

@@ -14,7 +14,8 @@ class DataController extends Controller
         $pays = Pays::all();
         return view('layouts.sidebar', compact('pays'));
     }
-    public function showB2BData(Request $request, $pays) 
+    
+    public function showB2BData(Request $request, $pays)
     {
         $pays = Pays::where('name', $pays)->firstOrFail();
         $query = $pays->b2bs();
