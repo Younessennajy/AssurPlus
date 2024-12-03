@@ -1,7 +1,7 @@
 <aside class="w-64 bg-white shadow-sm">
     <nav class="p-4 space-y-2">
-        <a href="{{ route('dashboard') }}"
-           class="flex items-center px-4 py-2 rounded-md {{ request()->routeIs('dashboard') ? 'bg-gray-200' : 'hover:bg-gray-100' }}">
+        <a href="<?php echo e(route('dashboard')); ?>"
+           class="flex items-center px-4 py-2 rounded-md <?php echo e(request()->routeIs('dashboard') ? 'bg-gray-200' : 'hover:bg-gray-100'); ?>">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
@@ -16,23 +16,24 @@
                 Pays
             </button>
             <div id="dataMenu" class="hidden bg-white shadow-md rounded-md mt-2 w-full">
-                @foreach($pays as $country)
+                <?php $__currentLoopData = $pays; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="py-2 px-4 hover:bg-gray-50">
-                    <div class="flex items-center space-x-2 mb-2 cursor-pointer" onclick="toggleCountryOptions('{{ $country->name }}')">
-                        {{ $country->name}}
+                    <div class="flex items-center space-x-2 mb-2 cursor-pointer" onclick="toggleCountryOptions('<?php echo e($country->name); ?>')">
+                        <?php echo e($country->name); ?>
+
                     </div>
-                    <div id="options-{{ $country->name }}" class="hidden space-x-2 ml-8">
-                        <a href="{{ route('pays.b2b', ['pays' => $country->name]) }}"
+                    <div id="options-<?php echo e($country->name); ?>" class="hidden space-x-2 ml-8">
+                        <a href="<?php echo e(route('pays.b2b', ['pays' => $country->name])); ?>"
                            class="text-sm px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                             B2B
                         </a>
-                        <a href="{{ route('pays.b2c', ['pays' => $country->name]) }}"
+                        <a href="<?php echo e(route('pays.b2c', ['pays' => $country->name])); ?>"
                            class="text-sm px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600">
                             B2C
                         </a>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div> 
 
@@ -56,4 +57,4 @@
             options.classList.add('hidden');
         }
     }
-</script>
+</script><?php /**PATH C:\xampp\htdocs\gestion_contrat\resources\views/layouts/sidebar.blade.php ENDPATH**/ ?>
