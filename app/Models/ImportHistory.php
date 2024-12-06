@@ -17,7 +17,7 @@ class ImportHistory extends Model
         'filename',
         'total_records',
         'imported_records',
-        'skipped_records'
+        'skipped_records','unique_import_history'
     ];
 
 

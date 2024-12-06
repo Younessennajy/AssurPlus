@@ -83,8 +83,11 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     ->name('export');
 
 
-    Route::get('/import/history', [ImportController::class, 'history'])
+    Route::get('/import/history', [DataController::class, 'history'])
      ->name('import.history');
+     
+     Route::delete('/deleteall', [DataController::class, 'deleteAll'])
+     ->name('history.deleteAll');
 
 
     Route::get('/columns/show', [ColumnsController::class, 'showColumns'])->name('columns.show');

@@ -8,11 +8,10 @@ use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Models\ImportHistory;
 use App\Models\Pays;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use App\Jobs\ProcessImportJob;
 
 class ImportController extends Controller
 {
@@ -50,7 +49,7 @@ class ImportController extends Controller
 
             $columns = $this->getTableColumns($type);
             $pays = Pays::where('name', $pays)->first();
-
+            
             return view('livewire.admin.data.show', [
                 'type' => $type,
                 'pays' => $pays,
@@ -59,126 +58,153 @@ class ImportController extends Controller
                 'b2cColumns' => $type === 'b2c' ? $columns : [],
                 'excelHeaders' => $excelHeaders,
             ]);
+           
         } catch (\Exception $e) {
             return back()->withErrors(['file' => 'Error reading file: ' . $e->getMessage()]);
         }
     }
 
     public function processImport(Request $request)
-{
-    try {
-        $b2bMapping = $request->input('b2b_mapping', []);
-        $b2cMapping = $request->input('b2c_mapping', []);
-        $pays_id = $request->input('pays_id');
-        $filename = session('original_filename');
-        $filePath = storage_path('app/' . session('temp_excel_file'));
-
-        $data = Excel::toArray([], $filePath)[0];
-        array_shift($data);
-
-        // Déterminer le type basé sur les mappings
-        $type = !empty($b2bMapping) ? 'b2b' : (!empty($b2cMapping) ? 'b2c' :null);
-
-        // Créer une entrée dans l'historique
-        $importHistory = ImportHistory::create([
-            'pays_id' => $pays_id,
-            'user_name' => Auth::user()->name,
-            'tag' => $filename,
-            'table_type' => $type,
-            'action' => 'importer',
-            'filename' => $filename,
-            'total_records' => count($data),
-            'imported_records' => 0,
-            'skipped_records' => 0, 
-        ]);
-
-        ProcessImportJob::dispatch(
-            $data,
-            $b2bMapping,
-            $b2cMapping,
-            $pays_id,
-            Auth::id(),
-            $filename,
-            $importHistory->id
-        );
-
-        if (file_exists($filePath)) {
-            unlink($filePath);
+    {
+        try {
+            $b2bMapping = $request->input('b2b_mapping', []);
+            $b2cMapping = $request->input('b2c_mapping', []);
+            $pays_id = $request->input('pays_id');
+            $filename = session('original_filename');
+            $filePath = storage_path('app/' . session('temp_excel_file'));
+    
+            $data = Excel::toArray([], $filePath)[0];
+            $headers = array_shift($data);
+            $type = !empty($b2bMapping) ? 'b2b' : 'b2c';
+            $skippedCount = 0;
+            $importedCount = 0;
+    
+            // Fetch existing phone numbers to optimize lookup
+            $existingPhones = DB::table($type)
+                ->where('pays_id', $pays_id)
+                ->pluck('phone')
+                ->toArray();
+    
+            DB::beginTransaction();
+    
+            foreach ($data as $row) {
+                // Map data
+                $rowData = $this->mapRowData($row, $type === 'b2b' ? $b2bMapping : $b2cMapping);
+    
+                if (empty($rowData['phone']) || in_array($rowData['phone'], $existingPhones)) {
+                    $skippedCount++;
+                    continue;
+                }
+    
+                // Prepare row for insertion
+                $rowData['pays_id'] = $pays_id;
+                $rowData['created_at'] = now();
+                $rowData['updated_at'] = now();
+    
+                // Insert into the table
+                DB::table($type)->insert($rowData);
+                $importedCount++;
+    
+                // Add to existing phones to prevent duplicates in the same batch
+                $existingPhones[] = $rowData['phone'];
+            }
+    
+            // Create ImportHistory entry
+            ImportHistory::create([
+                'pays_id' => $pays_id,
+                'user_id' => Auth::id(),
+                'filename' => $filename,
+                'total_records' => count($data),
+                'imported_records' => $importedCount,
+                'skipped_records' => $skippedCount,
+                'tag' => $this->generateTag($type, $pays_id),
+            ]);
+    
+            DB::commit();
+    
+            // Clean up the temporary file
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            session()->forget(['temp_excel_file', 'original_filename']);
+    
+            return redirect()->route('admin.dashboard')
+                ->with('success', "Import completed: $importedCount records imported, $skippedCount skipped.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            // Create ImportHistory entry for errors
+            ImportHistory::create([
+                'pays_id' => $pays_id,
+                'user_id' => Auth::id(),
+                'filename' => session('original_filename'),
+                'total_records' => isset($data) ? count($data) : 0,
+                'imported_records' => 0,
+                'skipped_records' => isset($skippedCount) ? $skippedCount : 0,
+                'tag' => $this->generateTag($type ?? 'unknown', $pays_id),
+                'error_message' => $e->getMessage(),
+                'action'=>'import'
+            ]);
+    
+            session()->forget(['temp_excel_file', 'original_filename']);
+    
+            return redirect()->route('admin.dashboard')
+                ->withErrors(['import' => 'Error during import: ' . $e->getMessage()]);
         }
-
-        return redirect()->route('admin.import.history')
-            ->with('success', 'Import lancé avec succès. Vous pouvez suivre la progression dans l\'historique des imports.');
-    } catch (\Exception $e) {
-        return back()->withErrors(['import' => 'Erreur lors de l\'importation : ' . $e->getMessage()]);
     }
+    
+
+
+    // p:ublic function history()
+    // {
+    //     $history = ImportHistory::with('pays')
+    //         ->orderBy('created_at', 'desc')
+    //         ->paginate(20);
+
+    //     return view('dashboard', compact('history'));
+    // }
+    protected function generateTag($tableType, $pays_id)
+    {
+        $pays = DB::table('pays')->where('id', $pays_id)->value('name');
+        $date = now()->format('Y-m-d');
+        return "{$tableType}_{$pays}_{$date}";
+    }
+
+    protected function processRow($row, $mapping, $table, $pays_id)
+{
+    $imported = 0;
+    $skipped = 0;
+
+    if (empty($mapping)) {
+        return ['imported' => $imported, 'skipped' => $skipped];
+    }
+
+    $data = $this->mapRowData($row, $mapping);
+    if (empty($data['phone'])) {
+        $skipped++;
+        return ['imported' => $imported, 'skipped' => $skipped];
+    }
+
+    $exists = DB::table($table)
+        ->where('phone', $data['phone'])
+        ->where('pays_id', $pays_id)
+        ->exists();
+
+    if ($exists) {
+        $skipped++;
+    } else {
+        $data['pays_id'] = $pays_id;
+        $data['created_at'] = now();
+        $data['updated_at'] = now();
+
+        DB::table($table)->insert($data);
+        $imported++;
+    }
+
+    return ['imported' => $imported, 'skipped' => $skipped];
 }
 
-    
-    public function history()
-    {
-        $history = ImportHistory::with('pays')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
 
-        return view('livewire.admin.data.import-history', compact('history'));
-    }
-
-    protected function processRow($data, $b2bMapping, $b2cMapping, $pays_id, $historyId)
-    {
-        $existingPhonesB2B = DB::table('b2b')
-            ->where('pays_id', $pays_id)
-            ->pluck('phone')
-            ->toArray();
-    
-        $existingPhonesB2C = DB::table('b2c')
-            ->where('pays_id', $pays_id)
-            ->pluck('phone')
-            ->toArray();
-    
-        $newB2BData = [];
-        $newB2CData = [];
-        $importedCount = 0;
-        $skippedCount = 0;
-    
-        foreach ($data as $row) {
-            if (!empty($b2bMapping)) {
-                $b2bData = $this->mapRowData($row, $b2bMapping);
-                if (!empty($b2bData['phone']) && !in_array($b2bData['phone'], $existingPhonesB2B)) {
-                    $b2bData['pays_id'] = $pays_id;
-                    $b2bData['created_at'] = now();
-                    $b2bData['updated_at'] = now();
-                    $newB2BData[] = $b2bData;
-                    $existingPhonesB2B[] = $b2bData['phone'];
-                    $importedCount++;
-                } else {
-                    $skippedCount++;
-                }
-            }
-    
-            // Traitement pour B2C
-            if (!empty($b2cMapping)) {
-                $b2cData = $this->mapRowData($row, $b2cMapping);
-                if (!empty($b2cData['phone']) && !in_array($b2cData['phone'], $existingPhonesB2C)) {
-                    $b2cData['pays_id'] = $pays_id;
-                    $b2cData['created_at'] = now();
-                    $b2cData['updated_at'] = now();
-                    $newB2CData[] = $b2cData;
-                    $existingPhonesB2C[] = $b2cData['phone'];
-                    $importedCount++;
-                } else {
-                    $skippedCount++;
-                }
-            }
-        }
-    
-        if (!empty($newB2BData)) {
-            DB::table('b2b')->insert($newB2BData);
-        }
-        if (!empty($newB2CData)) {
-            DB::table('b2c')->insert($newB2CData);
-        }
-    
-    }
     protected function mapRowData($row, $mapping)
     {
         $data = [];
@@ -202,5 +228,6 @@ class ImportController extends Controller
             $this->excludedColumns
         );
     }
+
     
-}   
+}

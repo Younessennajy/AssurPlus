@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Pays;
 use App\Models\B2B;
 use App\Models\B2C;
+use App\Models\ImportHistory;
 
 class DataController extends Controller
 {
+    protected $table = 'import_history';
     public function pays()
     {
         $pays = Pays::all();
@@ -173,7 +175,27 @@ public function updateData(Request $request, $pays, $type, $id)
         return redirect()->back()->with('success', 'Pays supprimé avec succès.');
     }
 
+    public function history()
+    {
+        $history = ImportHistory::with('pays')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('livewire.admin.data.import-history', compact('history'));
+    }
     
+    public function deleteAll(Request $request)
+{
+    // $this->authorize('delete', :ImportHistory::class);
+
+    try {
+        ImportHistory::truncate(); // Supprimer toutes les lignes
+        return redirect()->route('admin.dashboard')->with('success', 'Tous les enregistrements ont été supprimés avec succès.');
+    } catch (\Exception $e) {
+        return back()->withErrors(['delete' => 'Erreur lors de la suppression : ' . $e->getMessage()]);
+    }
+}
+
 
     
 

@@ -76,6 +76,22 @@
                                     </tbody>
                                     
                                 </table>
+                                
+                                <div class="flex justify-end mb-4">
+                                    <div class="flex justify-end mb-4">
+                                        @if($history->count() > 0)
+                                            <form action="{{ route('admin.history.deleteAll') }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous les enregistrements ?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
+                                                    Supprimer tous les enregistrements
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                    
+                                </div>
+                                
                             </div>
                         </div>
                         <div class="p-6 bg-gray-50">

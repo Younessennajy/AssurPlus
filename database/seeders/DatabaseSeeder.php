@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PaysTableSeeder::class,
-            B2bSeeder::class,
+            // B2bSeeder::class,
         ]);
         
 

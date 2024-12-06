@@ -110,7 +110,8 @@ class ProcessImportJob implements ShouldQueue
                 'total_records' => count($this->data),
                 'imported_records' => count($newB2BData) + count($newB2CData),
                 'skipped_records' => $skippedCount,
-                'status' => 'completed'
+                'status' => 'completed',
+                'action' => 'import'
             ]);
 
             DB::commit();

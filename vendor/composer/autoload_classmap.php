@@ -36,6 +36,8 @@ return array(
     'App\\Http\\Requests\\Auth\\AdminLoginRequest' => $baseDir . '/app/Http/Requests/Auth/AdminLoginRequest.php',
     'App\\Http\\Requests\\Auth\\LoginRequest' => $baseDir . '/app/Http/Requests/Auth/LoginRequest.php',
     'App\\Http\\Requests\\ProfileUpdateRequest' => $baseDir . '/app/Http/Requests/ProfileUpdateRequest.php',
+    'App\\Jobs\\ProcessImportJob' => $baseDir . '/app/Jobs/ProcessImportJob.php',
+    'App\\Jobs\\ProcessImportJobUser' => $baseDir . '/app/Jobs/ProcessImportJobUser.php',
     'App\\Models\\Admin' => $baseDir . '/app/Models/Admin.php',
     'App\\Models\\B2B' => $baseDir . '/app/Models/B2B.php',
     'App\\Models\\B2C' => $baseDir . '/app/Models/B2C.php',

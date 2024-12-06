@@ -682,6 +682,8 @@ class ComposerStaticInit84c61af57b4c8d8b767caf42ec360a3d
         'App\\Http\\Requests\\Auth\\AdminLoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Auth/AdminLoginRequest.php',
         'App\\Http\\Requests\\Auth\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Auth/LoginRequest.php',
         'App\\Http\\Requests\\ProfileUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/ProfileUpdateRequest.php',
+        'App\\Jobs\\ProcessImportJob' => __DIR__ . '/../..' . '/app/Jobs/ProcessImportJob.php',
+        'App\\Jobs\\ProcessImportJobUser' => __DIR__ . '/../..' . '/app/Jobs/ProcessImportJobUser.php',
         'App\\Models\\Admin' => __DIR__ . '/../..' . '/app/Models/Admin.php',
         'App\\Models\\B2B' => __DIR__ . '/../..' . '/app/Models/B2B.php',
         'App\\Models\\B2C' => __DIR__ . '/../..' . '/app/Models/B2C.php',
