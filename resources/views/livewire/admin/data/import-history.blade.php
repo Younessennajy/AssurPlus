@@ -4,6 +4,7 @@
             <div class="bg-white shadow-lg rounded-lg flex overflow-hidden">
                 <!-- Sidebar -->
                 @include('livewire.admin.layouts.sidebar')
+                
                 <main class="p-4 w-full">
                     <!-- Page Title -->
                     <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md p-6 mb-8">
@@ -21,79 +22,71 @@
                     <!-- Import History Table -->
                     <div class="bg-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-6">
-                            <div class="overflow-x-auto w-full ">
-                                <table class="min-w-full table-auto border-collapse border border-gray-200">
+                            <div class="overflow-x-auto w-full">
+                                <table class="min-w-full table-auto border-collapse border border-gray-200 max-w-full">
                                     <thead class="bg-gray-100">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
-                                            {{-- <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Fichier</th> --}}
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Ignorées</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Utilisateur</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Action</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Ignorées</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Utilisateur</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white">
                                         @forelse($history as $record)
                                             <tr class="hover:bg-gray-50 transition-colors">
-                                                <td class="px-6 py-4 border-b">{{ $record->created_at->format('d/m/Y H:i') }}</td>
-                                                {{-- <td class="px-6 py-4 border-b">
-                                                    <span class="text-sm font-semibold text-blue-500">{{ $record->filename ?? 'Non spécifié' }}</span>
-                                                </td> --}}
-                                                <td class="px-6 py-4 border-b text-blue-500 font-semibold">
+                                                <td class="px-6 py-4 border-b whitespace-nowrap text-sm">{{ $record->created_at->format('d/m/Y H:i') }}</td>
+                                                <td class="px-2 py-4 border-b text-blue-500 font-semibold text-xs whitespace-nowrap w-1/4">
                                                     {{ strtoupper($record->tag ?? 'Inconnu') }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b">
+                                                
+                                                <td class="px-4 py-4 border-b whitespace-nowrap text-sm">
                                                     {{ $record->pays->name ?? 'N/A' }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b text-gray-700">
+                                                <td class="px-4 py-4 border-b text-gray-700 whitespace-nowrap text-sm">
                                                     {{ $record->total_records ?? 0 }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b text-green-600">
+                                                <td class="px-4 py-4 border-b text-green-600 whitespace-nowrap text-sm">
                                                     {{ $record->imported_records ?? 0 }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b text-red-600">
+                                                <td class="px-4 py-4 border-b text-red-600 whitespace-nowrap text-sm">
                                                     {{ $record->skipped_records ?? 0 }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b">
+                                                <td class="px-4 py-4 border-b whitespace-nowrap text-sm">
                                                     {{ $record->user_name ?? 'Utilisateur inconnu' }}
                                                 </td>
-                                                <td class="px-6 py-4 border-b">
-                                                    {{ $record->action ?? 'Utilisateur inconnu' }}
-
+                                                <td class="px-4 py-4 border-b whitespace-nowrap text-sm">
+                                                    {{ $record->action ?? 'import' }}
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="9" class="px-6 py-4 text-center text-gray-500">
+                                                <td colspan="8" class="px-6 py-4 text-center text-gray-500">
                                                     Aucun enregistrement trouvé.
                                                 </td>
                                             </tr>
                                         @endforelse
                                     </tbody>
-                                    
                                 </table>
-                                
+
                                 <div class="flex justify-end mb-4">
-                                    <div class="flex justify-end mb-4">
-                                        @if($history->count() > 0)
-                                            <form action="{{ route('admin.history.deleteAll') }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous les enregistrements ?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
-                                                    Supprimer tous les enregistrements
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                    
+                                    @if($history->count() > 0)
+                                        <form action="{{ route('admin.history.deleteAll') }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous les enregistrements ?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
+                                                Supprimer tous les enregistrements
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
-                                
                             </div>
                         </div>
+
                         <div class="p-6 bg-gray-50">
                             {{ $history->links('pagination::tailwind') }}
                         </div>

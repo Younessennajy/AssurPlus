@@ -13,6 +13,7 @@
             <div class="bg-white shadow-lg rounded-lg flex overflow-hidden">
                 <!-- Sidebar -->
                 <?php echo $__env->make('livewire.admin.layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+                
                 <main class="p-4 w-full">
                     <!-- Page Title -->
                     <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md p-6 mb-8">
@@ -30,84 +31,78 @@
                     <!-- Import History Table -->
                     <div class="bg-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-6">
-                            <div class="overflow-x-auto w-full ">
-                                <table class="min-w-full table-auto border-collapse border border-gray-200">
+                            <div class="overflow-x-auto w-full">
+                                <table class="min-w-full table-auto border-collapse border border-gray-200 max-w-full">
                                     <thead class="bg-gray-100">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
-                                            
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Ignorées</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Utilisateur</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Action</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Date</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Tag</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Pays</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Total lignes</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Importées</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Ignorées</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Utilisateur</th>
+                                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase border-b">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white">
                                         <?php $__empty_1 = true; $__currentLoopData = $history; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $record): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                             <tr class="hover:bg-gray-50 transition-colors">
-                                                <td class="px-6 py-4 border-b"><?php echo e($record->created_at->format('d/m/Y H:i')); ?></td>
-                                                
-                                                <td class="px-6 py-4 border-b text-blue-500 font-semibold">
+                                                <td class="px-6 py-4 border-b whitespace-nowrap text-sm"><?php echo e($record->created_at->format('d/m/Y H:i')); ?></td>
+                                                <td class="px-2 py-4 border-b text-blue-500 font-semibold text-xs whitespace-nowrap w-1/4">
                                                     <?php echo e(strtoupper($record->tag ?? 'Inconnu')); ?>
 
                                                 </td>
-                                                <td class="px-6 py-4 border-b">
+                                                
+                                                <td class="px-4 py-4 border-b whitespace-nowrap text-sm">
                                                     <?php echo e($record->pays->name ?? 'N/A'); ?>
 
                                                 </td>
-                                                <td class="px-6 py-4 border-b text-gray-700">
+                                                <td class="px-4 py-4 border-b text-gray-700 whitespace-nowrap text-sm">
                                                     <?php echo e($record->total_records ?? 0); ?>
 
                                                 </td>
-                                                <td class="px-6 py-4 border-b text-green-600">
+                                                <td class="px-4 py-4 border-b text-green-600 whitespace-nowrap text-sm">
                                                     <?php echo e($record->imported_records ?? 0); ?>
 
                                                 </td>
-                                                <td class="px-6 py-4 border-b text-red-600">
+                                                <td class="px-4 py-4 border-b text-red-600 whitespace-nowrap text-sm">
                                                     <?php echo e($record->skipped_records ?? 0); ?>
 
                                                 </td>
-                                                <td class="px-6 py-4 border-b">
+                                                <td class="px-4 py-4 border-b whitespace-nowrap text-sm">
                                                     <?php echo e($record->user_name ?? 'Utilisateur inconnu'); ?>
 
                                                 </td>
-                                                <td class="px-6 py-4 border-b">
-                                                    <?php echo e($record->action ?? 'Utilisateur inconnu'); ?>
-
+                                                <td class="px-4 py-4 border-b whitespace-nowrap text-sm">
+                                                    <?php echo e($record->action ?? 'import'); ?>
 
                                                 </td>
                                             </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                             <tr>
-                                                <td colspan="9" class="px-6 py-4 text-center text-gray-500">
+                                                <td colspan="8" class="px-6 py-4 text-center text-gray-500">
                                                     Aucun enregistrement trouvé.
                                                 </td>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
-                                    
                                 </table>
-                                
+
                                 <div class="flex justify-end mb-4">
-                                    <div class="flex justify-end mb-4">
-                                        <?php if($history->count() > 0): ?>
-                                            <form action="<?php echo e(route('admin.history.deleteAll')); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous les enregistrements ?');">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('DELETE'); ?>
-                                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
-                                                    Supprimer tous les enregistrements
-                                                </button>
-                                            </form>
-                                        <?php endif; ?>
-                                    </div>
-                                    
+                                    <?php if($history->count() > 0): ?>
+                                        <form action="<?php echo e(route('admin.history.deleteAll')); ?>" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous les enregistrements ?');">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
+                                            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
+                                                Supprimer tous les enregistrements
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
-                                
                             </div>
                         </div>
+
                         <div class="p-6 bg-gray-50">
                             <?php echo e($history->links('pagination::tailwind')); ?>
 
