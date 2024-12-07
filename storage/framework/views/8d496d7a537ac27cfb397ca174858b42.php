@@ -1,0 +1,1 @@
+<img src="<?php echo e(asset('assets/logo.png')); ?>" alt="logo" width="50px" height="50px"><?php /**PATH C:\xampp\htdocs\Nouveau dossier\AssurPlus\resources\views\components\application-logo.blade.php ENDPATH**/ ?>

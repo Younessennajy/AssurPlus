@@ -91,10 +91,19 @@ class ImportController extends Controller
                 // Map data
                 $rowData = $this->mapRowData($row, $type === 'b2b' ? $b2bMapping : $b2cMapping);
     
+                if ($type === 'b2b') {
+                    if (!empty($rowData['dirigeant_prenom'])) {
+                        $rowData['dirigeant_prenom'] = ucfirst(strtolower($rowData['dirigeant_prenom']));
+                    }
+                    if (!empty($rowData['dirigeant_name'])) {
+                        $rowData['dirigeant_name'] = strtoupper($rowData['dirigeant_name']);
+                    }
+                }
                 if (empty($rowData['phone']) || in_array($rowData['phone'], $existingPhones)) {
                     $skippedCount++;
                     continue;
                 }
+
     
                 // Prepare row for insertion
                 $rowData['pays_id'] = $pays_id;
@@ -171,55 +180,126 @@ class ImportController extends Controller
     }
 
     protected function processRow($row, $mapping, $table, $pays_id)
+    {
+        $imported = 0;
+        $skipped = 0;
+    
+        if (empty($mapping)) {
+            return ['imported' => $imported, 'skipped' => $skipped];
+        }
+    
+        $data = $this->mapRowData($row, $mapping);
+        // ✅ Transformation des champs avant l'insertion
+        $data = $this->transformData($data, $table);
+        
+        if (empty($data['phone'])) {
+            $skipped++;
+            return ['imported' => $imported, 'skipped' => $skipped];
+        }
+    
+        $exists = DB::table($table)
+            ->where('phone', $data['phone'])
+            ->where('pays_id', $pays_id)
+            ->exists();
+    
+        if ($exists) {
+            $skipped++;
+        } else {
+            $data['pays_id'] = $pays_id;
+            $data['created_at'] = now();
+            $data['updated_at'] = now();
+    
+            DB::table($table)->insert($data);
+            $imported++;
+        }
+    
+        return ['imported' => $imported, 'skipped' => $skipped];
+    }
+    
+    
+    /**
+     * Applique les transformations sur les champs
+     */
+    /**
+ * Applique les transformations sur les champs
+ */
+protected function transformData(array $data, string $type): array
 {
-    $imported = 0;
-    $skipped = 0;
+    $transformations = [
+        'b2b' => [
+            'dirigeant_prenom' => 'capitalize',
+            'dirigeant_name' => 'uppercase',
+            'address' => 'capitalize',
+            'city' => 'capitalize'
+        ],
+        'b2c' => [
+            'first_name' => 'capitalize',
+            'last_name' => 'uppercase',
+            'address' => 'capitalize',
+            'city' => 'capitalize'
+        ]
+    ];
 
-    if (empty($mapping)) {
-        return ['imported' => $imported, 'skipped' => $skipped];
+    if (!isset($transformations[$type])) {
+        return $data;
     }
 
-    $data = $this->mapRowData($row, $mapping);
-    if (empty($data['phone'])) {
-        $skipped++;
-        return ['imported' => $imported, 'skipped' => $skipped];
+    foreach ($transformations[$type] as $field => $transformation) {
+        if (!empty($data[$field])) {
+            $data[$field] = $this->applyTransformation($data[$field], $transformation);
+        }
     }
 
-    $exists = DB::table($table)
-        ->where('phone', $data['phone'])
-        ->where('pays_id', $pays_id)
-        ->exists();
+    return $data;
+}
 
-    if ($exists) {
-        $skipped++;
-    } else {
-        $data['pays_id'] = $pays_id;
-        $data['created_at'] = now();
-        $data['updated_at'] = now();
-
-        DB::table($table)->insert($data);
-        $imported++;
+protected function applyTransformation($value, $type)
+{
+    switch ($type) {
+        case 'uppercase':
+            return strtoupper($value);
+        case 'capitalize':
+            return ucfirst(strtolower($value));
+        default:
+            return $value;
     }
-
-    return ['imported' => $imported, 'skipped' => $skipped];
 }
 
 
-    protected function mapRowData($row, $mapping)
-    {
-        $data = [];
-        if (!is_array($mapping)) {
-            return $data;
-        }
+protected function mapRowData($row, $mapping)
+{
+    $data = [];
+    if (!is_array($mapping)) {
+        return $data;
+    }
 
-        foreach ($mapping as $column => $index) {
-            if (!empty($index) && isset($row[$index])) {
+    foreach ($mapping as $column => $index) {
+        if (!empty($index) && isset($row[$index])) {
+            // Traitement spécial pour les champs nom/prénom
+            if ($column === 'dirigeant_name' || $column === 'last_name') {
+                // Si la valeur contient un point (comme "J.-F."), on prend la valeur complète
+                if (strpos($row[$index], '.') !== false) {
+                    $data[$column] = trim($row[$index]);
+                } else {
+                    // Sinon on prend la valeur normale
+                    $data[$column] = trim($row[$index]);
+                }
+            } else {
                 $data[$column] = trim($row[$index]);
             }
         }
-
-        return $data;
     }
+
+    // Nettoyage des valeurs
+    foreach ($data as $key => $value) {
+        // Suppression des caractères spéciaux indésirables
+        $data[$key] = preg_replace('/[^\p{L}\p{N}\s\-\.]/u', '', $value);
+        // Suppression des espaces multiples
+        $data[$key] = preg_replace('/\s+/', ' ', $data[$key]);
+    }
+
+    return $data;
+}
 
     protected function getTableColumns($table)
     {
